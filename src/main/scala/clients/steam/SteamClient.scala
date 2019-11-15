@@ -23,8 +23,7 @@ case class SteamAsset(
     exterior: String
 )
 
-class SteamClient(config: SteamClientConfig, httpClient: Client[IO])
-    extends Http4sDsl[IO] {
+class SteamClient(config: SteamClientConfig, httpClient: Client[IO]) extends Http4sDsl[IO] {
   def getSteamInventory(steamId: Long): IO[Inventory] =
     httpClient.expect[Inventory](
       Request[IO]()
@@ -40,8 +39,6 @@ class SteamClient(config: SteamClientConfig, httpClient: Client[IO])
 }
 
 object SteamClient {
-  def resource(
-      config: SteamClientConfig
-  )(implicit CE: ConcurrentEffect[IO]): Resource[IO, SteamClient] =
+  def resource(config: SteamClientConfig)(implicit CE: ConcurrentEffect[IO]): Resource[IO, SteamClient] =
     BlazeClientBuilder[IO](global).resource.map(new SteamClient(config, _))
 }

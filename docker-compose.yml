@@ -6,10 +6,16 @@ services:
 #      - 10000:10000
   postgres:
     image: postgres:latest
+    restart: "no"
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
       POSTGRES_DB: inventory
-    ports:
-      - 5432:5432
+#    volumes:
+#      - empty_dir:/var/lib/postgresql/data
+#      - ./1.sql:/docker-entrypoint-initdb.d/init.sql  
+#volumes:
+#  empty_dir:
     

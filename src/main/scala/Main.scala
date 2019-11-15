@@ -11,30 +11,30 @@ import routes.{HealthRoutes, InventoryRoutes}
 object Main extends IOApp with Http4sDsl[IO] {
   
   override def run(args: List[String]): IO[ExitCode] =
-    Resources.make.use(
-      resources =>
-        BlazeServerBuilder[IO]
-          .bindHttp(
-            resources.serviceConfig.httpPort.value,
-            resources.serviceConfig.httpHost.renderString
+    Resources.make.use(resources =>
+      resources.flywayClient.migrate *>
+      BlazeServerBuilder[IO]
+        .bindHttp(
+          resources.serviceConfig.httpPort.value,
+          resources.serviceConfig.httpHost.renderString
+        )
+        .withHttpApp {
+          
+          val healthRoutes    = new HealthRoutes
+          val inventoryRoutes = new InventoryRoutes(resources.sqlClient, resources.steamClient)
+          
+          val routes: HttpRoutes[IO] = Router[IO](
+            "/" -> { 
+              healthRoutes.routes <+> inventoryRoutes.routes
+            }
           )
-          .withHttpApp {
-            
-            val healthRoutes    = new HealthRoutes
-            val inventoryRoutes = new InventoryRoutes(resources.sqlClient, resources.steamClient)
-            
-            val routes: HttpRoutes[IO] = Router[IO](
-              "/" -> { 
-                healthRoutes.routes <+> inventoryRoutes.routes
-              }
-            )
-            
-            Logger.httpApp(logHeaders = false, logBody = false)(routes.orNotFound)
-          }
-          .serve
-          .compile
-          .drain
-          .as(ExitCode.Success)
+          
+          Logger.httpApp(logHeaders = false, logBody = false)(routes.orNotFound)
+        }
+        .serve
+        .compile
+        .drain
+        .as(ExitCode.Success)
       )
       .as(ExitCode.Success)
 }

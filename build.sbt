@@ -37,6 +37,7 @@ lazy val root = (project in file("."))
       "io.circe"      %% "circe-parser"        % circeVersion,
       "io.circe"      %% "circe-optics"        % "0.12.0",
       "is.cir"        %% "ciris"               % "1.0.0",
+      "org.flywaydb"   % "flyway-core"         % "6.0.8",
       "org.http4s"    %% "http4s-dsl"          % http4sVersion,
       "org.http4s"    %% "http4s-blaze-server" % http4sVersion,
       "org.http4s"    %% "http4s-blaze-client" % http4sVersion,

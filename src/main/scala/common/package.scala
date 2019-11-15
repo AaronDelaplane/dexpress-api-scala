@@ -1,7 +1,7 @@
+import cats.implicits._
 import ciris.{ConfigDecoder, ConfigError, Secret}
 import eu.timepit.refined.types.net.UserPortNumber
 import org.http4s.Uri
-import cats.implicits._
 
 import scala.util.Try
 
