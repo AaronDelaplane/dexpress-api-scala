@@ -4,16 +4,17 @@ import clients.steam.{SteamClient, SteamClientConfig}
 import doobie.util.transactor.Transactor
 import org.flywaydb.core.Flyway
 
-final case class Resources(
+// @formatter:off
+final case class ServiceResources(
   serviceConfig: ServiceConfig,
   steamClient:   SteamClient,
   sqlClient:     PostgresClient,
   flywayClient:  FlywayClient  
 )
 
-object Resources {
+object ServiceResources {
   
-  def make(implicit CE: ConcurrentEffect[IO], CS: ContextShift[IO]): Resource[IO, Resources] =
+  def make(implicit CE: ConcurrentEffect[IO], CS: ContextShift[IO]): Resource[IO, ServiceResources] =
     for {
       serviceConfig     <- Resource.liftF(ServiceConfig.configValue.load)
       steamClientConfig <- Resource.liftF(SteamClientConfig.configValue.load)
@@ -33,7 +34,7 @@ object Resources {
                              )
                            )
     } yield 
-      Resources(
+      ServiceResources(
         serviceConfig,
         steamClient,
         new PostgresClient(sqlTransactor),

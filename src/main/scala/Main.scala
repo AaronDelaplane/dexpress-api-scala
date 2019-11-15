@@ -8,10 +8,11 @@ import org.http4s.server.middleware.Logger
 import org.http4s.syntax.kleisli._
 import routes.{HealthRoutes, InventoryRoutes}
 
+// @formatter:off
 object Main extends IOApp with Http4sDsl[IO] {
   
   override def run(args: List[String]): IO[ExitCode] =
-    Resources.make.use(resources =>
+    ServiceResources.make.use(resources =>
       resources.flywayClient.migrate *>
       BlazeServerBuilder[IO]
         .bindHttp(
@@ -24,8 +25,8 @@ object Main extends IOApp with Http4sDsl[IO] {
           val inventoryRoutes = new InventoryRoutes(resources.sqlClient, resources.steamClient)
           
           val routes: HttpRoutes[IO] = Router[IO](
-            "/" -> { 
-              healthRoutes.routes <+> inventoryRoutes.routes
+            "/" -> {
+              healthRoutes.routes <+> inventoryRoutes.routes 
             }
           )
           

@@ -5,6 +5,36 @@
 #### PostgreSQL Data Store
 ```
 schema/table: 
+steam.assets_nonvalidated
+
+summary:
+- stateless / immutable
+- represents the state of a user's inventory at a specific point in time as described by the steam api
+- each row linked to a single inventory refresh event and user
+- non-validated data
+
+notes:
+- properties taken directly from steam api responses follow steam's naming convention to simplify codecs
+
+columns:
+- id                  UUID NOT NULL PRIMARY KEY
+- refresh_event_id    TEXT NOT NULL
+- users_steam_id_hash TEXT NOT NULL
+- appid:              INT,
+- assetid:            TEXT,  
+- classid:            TEXT,
+- instanceid:         TEXT, 
+- tradable:           INT,
+- market_hash_name:   TEXT,
+- icon_url:           TEXT,
+- item_data:          TEXT,
+- type:               TEXT,
+- rarity:             TEXT,
+- exterior:           TEXT,
+- sticker_info:       TEXT
+```
+```
+schema/table: 
 inventory.refresh_events
 
 summary:
@@ -17,30 +47,7 @@ columns:
 - end_time:      TIMESTAMPTZ NOT NULL
 - completion_ok: BOOLEAN NOT NULL                      
 ```
-```
-schema/table: 
-inventory.nonvalidated_items
 
-summary:
-- tracks inventory state as defined by https://steamcommunity.com/inventory/<STEAM_ID>
-- each row linked to a single user and a single refresh event
-- non-validated data
-
-columns:
-- id:               INT NOT NULL PRIMARY KEY 
-- appid:            INT,
-- assetid:          TEXT,
-- classid:          TEXT,
-- instanceid:       TEXT,
-- tradable:         INT,
-- market_hash_name: TEXT,
-- icon_url:         TEXT,
-- item_data:        TEXT,
-- type:             TEXT,
-- rarity:           TEXT,
-- exterior:         TEXT,
-- sticker_info:     TEXT
-```
 ```
 schema/table:
 inventory.validated_items

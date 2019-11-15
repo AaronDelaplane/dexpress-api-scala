@@ -5,7 +5,9 @@ import org.http4s.Uri
 
 import scala.util.Try
 
+// @formatter:off
 package object common {
+  
   implicit def portDecoder: ConfigDecoder[String, UserPortNumber] =
     ConfigDecoder.lift[String, UserPortNumber](
       string =>
