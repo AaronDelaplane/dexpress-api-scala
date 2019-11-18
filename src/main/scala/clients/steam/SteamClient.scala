@@ -46,7 +46,6 @@ class SteamClient(config: SteamClientConfig, httpClient: Client[IO]) extends Htt
       tags             <- d.tags.fold[IO[NonEmptyList[SteamTag]]](IO.raiseError(new Exception("tags not defined")))(
                             NonEmptyList.fromList(_).fold[IO[NonEmptyList[SteamTag]]](IO.raiseError(new Exception("tags is empty")))(IO.pure)
                           )
-      _ <- logger.info(tags.toString)
       rarity           <- attemptTag(tags, "rarity")
       exterior         <- attemptOptionalTag(tags, "exterior")
     } yield
@@ -63,8 +62,8 @@ class SteamClient(config: SteamClientConfig, httpClient: Client[IO]) extends Htt
     httpClient.expect[SteamInventory](
       Request[IO]()
         .withMethod(GET)
-        .withUri(Uri.unsafeFromString(s"${config.steamUri}/inventory/${steamId}/730/2?l=english&count=5"))
-    )
+        .withUri(Uri.unsafeFromString(s"${config.steamUri}/inventory/${steamId}/730/2?l=english&count=10"))
+      )
       .attempt
       .flatMap {
         case Left(throwable) => IO.raiseError(new Exception(s"request failed: $throwable"))
