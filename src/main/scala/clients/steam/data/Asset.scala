@@ -10,7 +10,7 @@ final case class Asset(
   market_hash_name: String,
   icon_url:         String,
   asset_type:       String,
-  exterior:         String, // generated from `descriptions.tags`
-  rarity:           String, // generated from `descriptions.tags`
-  item_data:        String  // generated from `descriptions.market_actions`
+  exterior:         Option[String], // generated from `descriptions.tags`. not present on all
+  rarity:           String,         // generated from `descriptions.tags`
+  item_data:        String          // generated from `descriptions.market_actions`
 )

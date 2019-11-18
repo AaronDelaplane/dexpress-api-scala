@@ -17,6 +17,22 @@ class SteamClient(config: SteamClientConfig, httpClient: Client[IO]) extends Htt
   
   val logger = Slf4jLogger.getLogger[IO]
   
+  def attemptLocalizedTagName(st: SteamTag): IO[String] =
+    st.localized_tag_name
+      .fold[IO[String]](IO.raiseError(new Exception("localized_tag_name not defined")))(IO.pure)
+  
+  def attemptOptionalTag(tags: NonEmptyList[SteamTag], tagName: String): IO[Option[String]] =
+    tags
+      .find(_.category.map(_.toLowerCase === tagName).getOrElse(false))
+      .fold[IO[Option[String]]](IO.pure(None))(attemptLocalizedTagName(_).map(Some.apply))
+  
+  def attemptRequiredTag(tags: NonEmptyList[SteamTag], tagName: String): IO[String] =
+    tags
+      .find(_.category.map(_.toLowerCase === tagName).getOrElse(false))
+      .fold[IO[SteamTag]](IO.raiseError(new Exception(s"tag $tagName not found")))(IO.pure)
+      .flatMap[String](attemptLocalizedTagName)
+    
+  
   def attemptToAsset(a: SteamAsset)(d: SteamDescription): IO[Asset] =
     for {
       appid            <- a.appid.fold[IO[Int]](IO.raiseError(new Exception("appid is not defined")))(IO.pure)
@@ -28,8 +44,12 @@ class SteamClient(config: SteamClientConfig, httpClient: Client[IO]) extends Htt
       icon_url         <- d.icon_url.fold[IO[String]](IO.raiseError(new Exception("icon_url is not defined")))(IO.pure)
       asset_type       <- d.`type`.fold[IO[String]](IO.raiseError(new Exception("type is not defined")))(IO.pure)
       item_data        <- IO.pure("item_data") // Some("-") // d.market_actions // transform to `item_data`
-      rarity           <- IO.pure("rarity")    // d.tags.find(_.category.map(s => s.toLowerCase === "rarity").getOrElse(false)).flatMap(_.localized_tag_name) // transform to `rarity` and `exterior`
-      exterior         <- IO.pure("exterior")  // d.tags.find(_.category.map(s => s.toLowerCase === "exterior").getOrElse(false)).flatMap(_.localized_tag_name) // transform to `rarity` and `exterior`
+      tags             <- d.tags.fold[IO[NonEmptyList[SteamTag]]](IO.raiseError(new Exception("tags is not defined")))(
+                            NonEmptyList.fromList(_).fold[IO[NonEmptyList[SteamTag]]](IO.raiseError(new Exception("tags is empty")))(IO.pure)
+                          )
+      _ <- logger.info(tags.toString)
+      rarity           <- attemptRequiredTag(tags, "rarity")
+      exterior         <- attemptOptionalTag(tags, "exterior")
     } yield
       Asset(appid, assetid, classid, instanceid, tradable, market_hash_name, icon_url, asset_type, exterior, rarity, item_data)
      
