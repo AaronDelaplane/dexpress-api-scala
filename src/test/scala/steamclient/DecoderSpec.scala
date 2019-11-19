@@ -1,9 +1,9 @@
 package steamclient
 
 import clients.steam.data._
-import io.circe.Json
 import io.circe.parser.parse
 import io.circe.syntax._
+import io.circe.{Decoder, Encoder, Json}
 import org.scalatest._
 import steamclient.DecoderSpec._
 
@@ -17,63 +17,34 @@ Json.Null will fail on attempt to decode
 
 // @formatter:off
 class DecoderSpec extends FlatSpec with Matchers {
+  
+  def attemptDecode[A](path: String)(implicit d: Decoder[A]): Assertion =
+    decodeFile[A](path).isRight should equal(true)
+  
+  def attemptDecodeEncode[A](path: String)(implicit d: Decoder[A], e: Encoder[A]): Assertion =
+    decodeFile[A](path).map(_.asJson).isRight should equal(true)
+  
+  "steam asset decoder" should "decode json" in
+    attemptDecode[SteamAsset]("steam-asset.json")
+  
+  "steam description decoder" should "decode json" in
+    attemptDecode[SteamDescription]("steam-description.json")
 
-  // todo abstract tests into common fn
-  
-  "steam asset decoder" should "decode json" in {
-    parse(
-      getResourceUnsafe("steam-asset.json")
-    )
-      .getOrElse(Json.Null)
-      .as[SteamAsset]
-      .isRight should equal(true)
-  }
-  
-  "steam description decoder" should "decode json" in {
-    parse(
-      getResourceUnsafe("steam-description.json")
-    )
-      .getOrElse(Json.Null)
-      .as[SteamDescription]
-      .isRight should equal(true)
-  }
-  
-  "steam tag decoder" should "decode json" in {
-    parse(
-      getResourceUnsafe("steam-tag.json")
-    )
-      .getOrElse(Json.Null)
-      .as[SteamTag]
-      .isRight should equal(true)
-  }  
-  
-  "steam market action decoder" should "decode json" in {
-    parse(
-      getResourceUnsafe("steam-market-action.json")
-    )
-      .getOrElse(Json.Null)
-      .as[SteamMarketAction]
-      .isRight should equal(true)
-  }
-  
-  "steam inventory decoder" should "decode empty json" in {
-    parse(
-      getResourceUnsafe("steam-inventory-empty.json")
-    )
-      .getOrElse(Json.Null)
-      .as[SteamInventory]
-      .isRight should equal(true)
-  }
-  
-  "steam inventory decoder" should "decode non-empty json" in {
-    parse(
-      getResourceUnsafe("steam-inventory-nonempty.json")
-    )
-    .getOrElse(Json.Null) // Json.Null will fail on attempt to decode
-    .as[SteamInventory]
-    .map(_.asJson)
-    .isRight should equal(true)
-  }
+  "steam tag decoder" should "decode json" in
+    attemptDecode[SteamTag]("steam-tag.json")
+
+  "steam market action decoder" should "decode json" in
+    attemptDecode[SteamMarketAction]("steam-market-action.json")
+
+  "steam inventory decoder" should "decode empty json" in
+    attemptDecode[SteamInventory]("steam-inventory-empty.json")
+
+  "steam inventory codecs" should "decode & encode json" in
+    attemptDecodeEncode[SteamInventory]("steam-inventory.json")
+
+  "steam inventory codecs" should "decode & encode large json" in
+    attemptDecodeEncode[SteamInventory]("steam-inventory-large.json")
+   
 }
 
 object DecoderSpec {
@@ -83,5 +54,10 @@ object DecoderSpec {
     source.close()
     string
   }
+
+  def decodeFile[A](path: String)(implicit d: Decoder[A]): Decoder.Result[A] =
+    parse(getResourceUnsafe(path))
+      .getOrElse(Json.Null)
+      .as[A]
     
 }
