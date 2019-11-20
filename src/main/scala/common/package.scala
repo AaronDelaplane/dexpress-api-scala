@@ -1,3 +1,4 @@
+import cats.data.NonEmptyList
 import cats.implicits._
 import ciris.{ConfigDecoder, ConfigError, Secret}
 import eu.timepit.refined.types.net.UserPortNumber
@@ -7,6 +8,9 @@ import scala.util.Try
 
 // @formatter:off
 package object common {
+  
+  type NEL[A]     = NonEmptyList[A]
+  type ErrorOr[A] = Either[String, A]
   
   implicit def portDecoder: ConfigDecoder[String, UserPortNumber] =
     ConfigDecoder.lift[String, UserPortNumber](

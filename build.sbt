@@ -2,9 +2,9 @@ import com.typesafe.sbt.packager.docker.{Cmd, ExecCmd}
 
 version := "0.1"
 
-ThisBuild / scalaVersion := "2.12.9"
+ThisBuild / scalaVersion := "2.13.1"
 
-scalacOptions += "-Ypartial-unification" // remove if updated to Scala v2.13
+//scalacOptions += "-Ypartial-unification" // remove if updated to Scala v2.13
 
 ThisBuild / organization := "dexpress"
 
@@ -13,7 +13,7 @@ val circeVersion    = "0.12.3"
 val cirisVersion    = "1.0.0"
 val doobieVersion   = "0.8.6"
 val fs2Version      = "2.1.0"
-val http4sVersion   = "0.20.12"
+val http4sVersion   = "0.21.0-M5"
 val log4CatsVersion = "1.0.1"
 val refinedVersion  = "0.9.10"
 
@@ -75,19 +75,55 @@ lazy val root = (project in file("."))
     initialCommands in console := 
       """
         |import cats._
+        |import cats.data._
         |import cats.implicits._
         |import cats.effect._
+        |import doobie._
+        |import doobie.implicits._
+        |import doobie.util.ExecutionContexts
         |import eu.timepit.refined._
         |import eu.timepit.refined.api._
         |import eu.timepit.refined.auto._
         |import eu.timepit.refined.boolean._
         |import eu.timepit.refined.numeric._
         |import eu.timepit.refined.types.string._
+        |import fs2.Stream
         |import org.http4s.circe._
         |import io.circe._
         |import io.circe.parser._
         |import io.circe.syntax._
         |import io.circe.generic.semiauto._
         |import org.http4s.{Request, Uri}
+        |
+        |import clients.data._
+        |
+        |import java.util.UUID
+        |
+        |implicit val cs = IO.contextShift(ExecutionContexts.synchronous)
+        |val xa = Transactor.fromDriverManager[IO](
+        |  "org.postgresql.Driver",     // driver classname
+        |  "jdbc:postgresql:inventory", // connect URL (driver-specific)
+        |  "postgres",                  // user
+        |  "password",                  // password
+        |  Blocker.liftExecutionContext(ExecutionContexts.synchronous) // just for testing
+        |)
+        |
+        |val asset = Asset(
+        |  id = UUID.randomUUID(), 
+        |  refresh_id = UUID.randomUUID(),
+        |  steam_id = "steam_id",
+        |  appid = 1,
+        |  assetid = "assetid",
+        |  classid = "classid",
+        |  instanceid = "instanceid",
+        |  tradable = 0,
+        |  market_hash_name = "market_hash_name",
+        |  icon_url = "icon_url",
+        |  asset_type = "asset_type",
+        |  exterior = Some("exterior"),
+        |  rarity = "rarity",
+        |  item_data = "item_data",
+        |  sticker_info = "sticker_info"
+        |)
   """.stripMargin
   )

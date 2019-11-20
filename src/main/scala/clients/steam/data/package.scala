@@ -13,22 +13,6 @@ package object data {
   /*
   show instances -------------------------------------------------------------------------------------------------------
    */
-  implicit def assetShow: Show[Asset] = Show.show(x => 
-    s"""
-       |appid:            ${x.appid}
-       |assetid:          ${x.assetid}         
-       |classid:          ${x.classid}         
-       |instanceid:       ${x.instanceid}      
-       |tradable:         ${x.tradable}        
-       |market_hash_name: ${x.market_hash_name}
-       |icon_url:         ${x.icon_url}        
-       |asset_type:       ${x.asset_type}      
-       |exterior:         ${x.exterior}        
-       |rarity:           ${x.rarity}          
-       |item_data:        ${x.item_data}
-    """.stripMargin
-  )
-  
   // generic for List[A]
   implicit class ShowList[A](as: List[A])(implicit s: Show[A]) {
     def listShow: Show[List[A]] = Show.show(_.foldLeft(Monoid[String].empty)((b, a) => b + a.show))

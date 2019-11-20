@@ -4,7 +4,6 @@ import cats.effect.IO
 import cats.implicits._
 import clients.sql.PostgresClient
 import clients.steam.SteamClient
-import clients.steam.data._
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
@@ -16,10 +15,11 @@ class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient) extend
   
   def routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
     
-    case GET -> Root / "inventory" / "refresh" / LongVar(steamId) =>
+    case GET -> Root / "inventory" / "refresh" / steamId / IntVar(count) =>
       for {
-        assets    <- steamClient.attemptFetchAssets(steamId)
-        _         <- logger.info(assets.show)           
+        refreshId <- java.util.UUID.randomUUID().pure[IO]
+        assets    <- steamClient.sourceAssets(refreshId, steamId, count)
+        _         <- pgClient.insertAssets(assets)
         response  <- Ok("success")
       } yield response
 

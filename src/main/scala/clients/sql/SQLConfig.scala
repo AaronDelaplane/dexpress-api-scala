@@ -22,7 +22,7 @@ object SQLConfig {
   val DEFAULT_POSTGRES_PORT: UserPortNumber = UserPortNumber.unsafeFrom(5432)
   val DEFAULT_POSTGRES_USER: String = "postgres"
   val DEFAULT_POSTGRES_PASSWORD: Secret[String] = Secret("password")
-  val DEFAULT_POSTGRES_DATABASE: String = "postgres"
+  val DEFAULT_POSTGRES_DATABASE: String = "inventory"
 
   val configValue: ConfigValue[SQLConfig] =
     (

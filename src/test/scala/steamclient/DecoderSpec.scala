@@ -44,10 +44,18 @@ class DecoderSpec extends FlatSpec with Matchers {
 
   "steam inventory codecs" should "decode & encode large json" in
     attemptDecodeEncode[SteamInventory]("steam-inventory-large.json")
+  
+  "steam inventory codecs" should "return equal number of assets & descriptions" in {
+    val si = parse(getResourceUnsafe("steam-inventory-large.json"))
+      .getOrElse(Json.Null)
+      .as[SteamInventory].toOption.get
+    si.assets.get.size should equal(si.descriptions.get.size)
+  }             
    
 }
 
 object DecoderSpec {
+  
   def getResourceUnsafe(path: String): String = {
     val source = Source.fromResource(path)
     val string = source.mkString
