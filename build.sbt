@@ -34,6 +34,7 @@ lazy val root = (project in file("."))
       "ch.qos.logback"     % "logback-core"        % "1.2.3",
       "co.fs2"            %% "fs2-core"            % fs2Version,
       "co.fs2"            %% "fs2-io"              % fs2Version,
+      "com.beachape"      %% "enumeratum"          % "1.5.13",
       "io.chrisdavenport" %% "log4cats-slf4j"      % "1.0.1",
       "io.circe"          %% "circe-core"          % circeVersion,
       "io.circe"          %% "circe-generic"       % circeVersion,

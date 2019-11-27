@@ -15,6 +15,7 @@ class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient) extend
   
   def routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
     
+    // source remote inventory, validate, and write to local
     case GET -> Root / "inventory" / "refresh" / steamId / IntVar(count) =>
       for {
         refreshId <- java.util.UUID.randomUUID().pure[IO]
@@ -22,6 +23,14 @@ class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient) extend
         _         <- pgClient.insertAssets(assets)
         response  <- Ok("success")
       } yield response
+      
+    case PUT -> Root / "asset" :? StateToQueryParamMatcher(statetoValidated) =>
+      statetoValidated.fold(
+        parseFailure => BadRequest(parseFailure.head.sanitized),
+        stateto      => Ok(stateto.toString)
+      )
+      
+      
 
   }
 
