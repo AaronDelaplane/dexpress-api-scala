@@ -23,7 +23,9 @@ class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient) extend
         _         <- pgClient.insertAssets(assets)
         response  <- Ok("success")
       } yield response
-      
+    
+    // change the state of an asset to `trading` || `nottrading`
+    // todo add UUID of asset as query param  
     case PUT -> Root / "asset" :? StateToQueryParamMatcher(statetoValidated) =>
       statetoValidated.fold(
         parseFailure => BadRequest(parseFailure.head.sanitized),
