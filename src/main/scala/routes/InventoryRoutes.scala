@@ -26,10 +26,10 @@ class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient) extend
     
     // change the state of an asset to `trading` || `nottrading`
     // todo add UUID of asset as query param  
-    case PUT -> Root / "asset" :? StateToQueryParamMatcher(statetoValidated) =>
+    case PUT -> Root / "asset" :? UuidToQPM(uuidValidated) +& StateToQPM(statetoValidated) =>
       statetoValidated.fold(
         parseFailure => BadRequest(parseFailure.head.sanitized),
-        stateto      => Ok(stateto.toString)
+        stateto      => Ok(stateto.toString + uuidValidated.toString)
       )
       
       
