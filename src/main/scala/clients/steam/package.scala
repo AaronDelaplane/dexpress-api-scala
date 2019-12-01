@@ -1,14 +1,14 @@
-package clients.steam
+package clients
 
 import cats.effect.IO
 import cats.implicits._
 import cats.{Monoid, Show}
+import common.{SteamAsset, SteamDescription, SteamInventory, SteamMarketAction, SteamTag}
 import io.circe.{Decoder, Encoder}
 import org.http4s.EntityDecoder
-import org.http4s.circe._
+import org.http4s.circe.jsonOf
 
-// @formatter:off
-package object data {
+package object steam {
 
   /*
   show instances -------------------------------------------------------------------------------------------------------
@@ -17,7 +17,7 @@ package object data {
   implicit class ShowList[A](as: List[A])(implicit s: Show[A]) {
     def listShow: Show[List[A]] = Show.show(_.foldLeft(Monoid[String].empty)((b, a) => b + a.show))
   }
-   
+
   /*
   codec instances ------------------------------------------------------------------------------------------------------ 
    */
@@ -27,14 +27,14 @@ package object data {
     Encoder.forProduct2("assets", "descriptions")(x => (x.descriptions, x.assets))
   implicit def steamInventoryEntityDecoder: EntityDecoder[IO, SteamInventory] =
     jsonOf[IO, SteamInventory]
-   
+
   implicit def steamAssetDecoder: Decoder[SteamAsset] =
     Decoder.forProduct6("appid","contextid","assetid","classid","instanceid","amount")(SteamAsset.apply)
   implicit def steamAssetEncoder: Encoder[SteamAsset] =
     Encoder.forProduct6("appid","contextid","assetid","classid","instanceid","amount")(
       x => (x.appid, x.contextid, x.assetid, x.classid, x.instanceid, x.amount)
     )
-      
+
   implicit def steamDescriptionDecoder: Decoder[SteamDescription] =
     Decoder.forProduct9(
       "appid",
@@ -68,16 +68,16 @@ package object data {
       x.market_hash_name,
       x.tags,
       x.market_actions
-      )
     )
-      
+    )
+
   implicit def steamTagDecoder: Decoder[SteamTag] =
-    Decoder.forProduct2("category", "localized_tag_name")(SteamTag.apply)      
+    Decoder.forProduct2("category", "localized_tag_name")(SteamTag.apply)
   implicit def steamTagEncoder: Encoder[SteamTag] =
-    Encoder.forProduct2("category", "localized_tag_name")(x => (x.category, x.localized_tag_name))       
+    Encoder.forProduct2("category", "localized_tag_name")(x => (x.category, x.localized_tag_name))
 
   implicit def steamMarketActionDecoder: Decoder[SteamMarketAction] =
-    Decoder.forProduct1("link")(SteamMarketAction.apply)             
+    Decoder.forProduct1("link")(SteamMarketAction.apply)
   implicit def steamMarketActionEncoder: Encoder[SteamMarketAction] =
     Encoder.forProduct1("link")(x => (x.link))
 }

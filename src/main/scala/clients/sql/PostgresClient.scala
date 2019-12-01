@@ -1,8 +1,10 @@
 package clients.sql
 
+import java.util.UUID
+
 import cats.data.NonEmptyList
 import cats.effect.IO
-import clients.data.Asset
+import common.Asset
 import doobie.implicits._
 import doobie.util.transactor.Transactor
 import org.http4s.Response
@@ -16,7 +18,10 @@ class PostgresClient(xa: Transactor[IO]) extends Http4sDsl[IO] {
       case Right(_)        => NoContent()
     }
   
-  def insertAssets(assets: NonEmptyList[Asset]): IO[Int] =
+  def insert(assets: NonEmptyList[Asset]): IO[Int] =
     Statements.insertAssets(assets).transact(xa)
+  
+//  def select(uuid: UUID): IO[Asset] =
+//    Statements.selectAsset(uuid).transact(xa)
   
 }

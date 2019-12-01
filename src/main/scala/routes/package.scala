@@ -1,18 +1,19 @@
 import java.util.UUID
 
+import cats.Show
+import cats.data.NonEmptyList
 import cats.effect.IO
-import enumeratum._
-import org.http4s.{ParseFailure, QueryParamDecoder}
-import org.http4s.dsl.Http4sDsl
 import cats.implicits._
 import cats.kernel.Monoid
-import java.util.UUID
+import enumeratum._
+import org.http4s.dsl.Http4sDsl
+import org.http4s.{ParseFailure, QueryParamDecoder}
 
 import scala.util.matching.Regex
 
 package object routes extends Http4sDsl[IO] {
   /*
-  helpers --------------------------------------------------------------------------------------------------------------
+  error response messages ----------------------------------------------------------------------------------------------
    */
   def toParseFailureMessage[A](name: String, values: Seq[A]): String =
     s"$name is not one of ${values}"
@@ -42,7 +43,7 @@ package object routes extends Http4sDsl[IO] {
         UUID.fromString(_).asRight[ParseFailure]
       )
     )
-  object UuidToQPM extends ValidatingQueryParamDecoderMatcher[UUID]("uuid")
+  object UuidQPM extends ValidatingQueryParamDecoderMatcher[UUID]("uuid")
   
   implicit def stateToQPD: QueryParamDecoder[StateTo] = 
     QueryParamDecoder[String].emap[StateTo](s => 
@@ -54,4 +55,12 @@ package object routes extends Http4sDsl[IO] {
         )
   object StateToQPM extends ValidatingQueryParamDecoderMatcher[StateTo]("stateto")
 
+  /*
+  show instances -------------------------------------------------------------------------------------------------------
+   */
+  implicit def parseFailureNelShow: Show[NonEmptyList[org.http4s.ParseFailure]] =
+    Show.show[NonEmptyList[org.http4s.ParseFailure]](_.map(_.sanitized).show)
+
+  implicit def parseFailureShow: Show[org.http4s.ParseFailure] =
+    Show.show[org.http4s.ParseFailure](_.sanitized)
 }

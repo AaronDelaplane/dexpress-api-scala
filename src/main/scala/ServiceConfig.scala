@@ -4,7 +4,6 @@ import common._
 import eu.timepit.refined.types.net.UserPortNumber
 import org.http4s.Uri
 
-// @formatter:off
 final case class ServiceConfig(
     httpHost: Uri,
     httpPort: UserPortNumber

@@ -4,7 +4,6 @@ import clients.steam.{SteamClient, SteamClientConfig}
 import doobie.util.transactor.Transactor
 import org.flywaydb.core.Flyway
 
-// @formatter:off
 final case class ServiceResources(
   serviceConfig: ServiceConfig,
   steamClient:   SteamClient,

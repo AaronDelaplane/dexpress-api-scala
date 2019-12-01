@@ -4,7 +4,6 @@ import ciris.{ConfigValue, env}
 import common._
 import org.http4s.Uri
 
-// @formatter:off
 final case class SteamClientConfig(
     steamUri: Uri
 )

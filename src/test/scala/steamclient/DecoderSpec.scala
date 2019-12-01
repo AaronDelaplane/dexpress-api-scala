@@ -1,6 +1,6 @@
 package steamclient
 
-import clients.steam.data._
+import common.{SteamAsset, SteamDescription, SteamInventory, SteamMarketAction, SteamTag}
 import io.circe.parser.parse
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json}
@@ -14,8 +14,6 @@ Notes:
 
 Json.Null will fail on attempt to decode
  */
-
-// @formatter:off
 class DecoderSpec extends FlatSpec with Matchers {
   
   def attemptDecode[A](path: String)(implicit d: Decoder[A]): Assertion =

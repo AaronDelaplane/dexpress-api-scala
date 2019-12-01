@@ -1,6 +1,5 @@
-package clients.steam.data
+package common
 
-// @formatter:off
 final case class SteamInventory(
   assets:       Option[List[SteamAsset]],
   descriptions: Option[List[SteamDescription]]

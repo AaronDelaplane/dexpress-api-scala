@@ -8,7 +8,6 @@ import org.http4s.server.middleware.Logger
 import org.http4s.syntax.kleisli._
 import routes.{HealthRoutes, InventoryRoutes}
 
-// @formatter:off
 object Main extends IOApp with Http4sDsl[IO] {
   
   override def run(args: List[String]): IO[ExitCode] =

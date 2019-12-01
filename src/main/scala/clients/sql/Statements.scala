@@ -1,7 +1,9 @@
 package clients.sql
 
+import java.util.UUID
+
 import cats.data.NonEmptyList
-import clients.data.Asset
+import common.Asset
 import doobie._
 import doobie.free.connection.ConnectionIO
 import doobie.postgres._
@@ -25,9 +27,12 @@ object Statements {
         asset_type,
         exterior,
         rarity,
-        item_data,
+        link_id,
         sticker_info
       ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """).updateMany(assets)
+  
+  def selectAsset(uuid: UUID): ConnectionIO[Asset] = ???
+    
   
 }

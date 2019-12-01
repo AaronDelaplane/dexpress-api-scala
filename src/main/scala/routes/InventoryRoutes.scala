@@ -1,5 +1,8 @@
 package routes
 
+import java.util.UUID.randomUUID
+
+import cats.data.Validated.{Invalid, Valid}
 import cats.effect.IO
 import cats.implicits._
 import clients.sql.PostgresClient
@@ -8,7 +11,15 @@ import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 
-// @formatter:off
+/*
+todo finish parsing of steam inventory to asset
+todo should instance_id ever be `0`? 
+todo set asset to `trading`. set asset to `nottrading`
+todo search assets
+todo refresh existing inventory
+todo add refresh time limit   
+ */
+
 class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient) extends Http4sDsl[IO] {
 
   implicit def logger = Slf4jLogger.getLogger[IO]
@@ -18,22 +29,26 @@ class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient) extend
     // source remote inventory, validate, and write to local
     case GET -> Root / "inventory" / "refresh" / steamId / IntVar(count) =>
       for {
-        refreshId <- java.util.UUID.randomUUID().pure[IO]
-        assets    <- steamClient.sourceAssets(refreshId, steamId, count)
-        _         <- pgClient.insertAssets(assets)
+        inventory <- steamClient.getInventory(steamId, count)
+        refreshId <- randomUUID().pure[IO]
+        assets    <- maps.toAssets(refreshId, steamId, inventory)
+        _         <- pgClient.insert(assets)
         response  <- Ok("success")
       } yield response
-    
-    // change the state of an asset to `trading` || `nottrading`
-    // todo add UUID of asset as query param  
-    case PUT -> Root / "asset" :? UuidToQPM(uuidValidated) +& StateToQPM(statetoValidated) =>
-      statetoValidated.fold(
-        parseFailure => BadRequest(parseFailure.head.sanitized),
-        stateto      => Ok(stateto.toString + uuidValidated.toString)
-      )
       
-      
-
+    // set state of asset to `trading` || `nottrading`. return error if state already === 
+//    case PUT -> Root / "asset" :? UuidQPM(uuidValidated) +& StateToQPM(statetoValidated) =>
+//      (uuidValidated, statetoValidated)
+//        .mapN((uuid, stateto) => for {
+//          asset <- pgClient.select(uuid)
+//        } yield Ok("hi"))
+//        .valueOr(errors       => BadRequest(errors.show))
+//      match {
+//        case (Invalid(a),  Invalid(b))     => BadRequest((a ::: b).show)
+//        case (Invalid(a),  _)              => BadRequest(a.show)
+//        case (_,           Invalid(b))     => BadRequest(b.show)
+//        case (Valid(uuid), Valid(stateto)) => Ok(s"$uuid-----$stateto")
+//      }
+  
   }
-
 }
