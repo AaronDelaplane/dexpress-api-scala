@@ -1,4 +1,4 @@
-package clients.sql
+package clients.postgres
 
 import cats.effect.IO
 import org.flywaydb.core.Flyway

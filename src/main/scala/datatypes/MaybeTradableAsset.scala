@@ -1,8 +1,11 @@
-package common
+package datatypes
 
 import java.util.UUID
 
-final case class Asset(
+/*
+An intermediary data type, which may or may not be able to be mapped to a `TradableAsset`
+ */
+final case class MaybeTradableAsset(
   id:               UUID,
   refresh_id:       UUID,
   steam_id:         String,

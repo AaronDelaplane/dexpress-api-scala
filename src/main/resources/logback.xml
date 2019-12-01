@@ -20,4 +20,8 @@
     <appender-ref ref="STDOUT"/>
   </logger>
   
+  <logger name="doobie.util" level="DEBUG" additivity="false">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+  
 </configuration>

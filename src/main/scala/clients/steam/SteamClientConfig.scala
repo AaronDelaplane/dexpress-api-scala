@@ -1,7 +1,7 @@
 package clients.steam
 
 import ciris.{ConfigValue, env}
-import common._
+import codecs.uriDecoder
 import org.http4s.Uri
 
 final case class SteamClientConfig(

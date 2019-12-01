@@ -1,6 +1,6 @@
 import cats.implicits._
 import ciris._
-import common._
+import codecs._
 import eu.timepit.refined.types.net.UserPortNumber
 import org.http4s.Uri
 

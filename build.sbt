@@ -21,7 +21,11 @@ lazy val root = (project in file("."))
   .enablePlugins(JavaAppPackaging, DockerPlugin)
   .settings(
     name := "dexpress-inventory-service",
+    
     // scalafmtOnCompile := true,
+    
+    // required for specs2
+    scalacOptions in Test ++= Seq("-Yrangepos"),
     
     /*
     library dependencies
@@ -41,7 +45,7 @@ lazy val root = (project in file("."))
       "io.circe"          %% "circe-parser"        % circeVersion,
       "io.circe"          %% "circe-optics"        % "0.12.0",
       "is.cir"            %% "ciris"               % "1.0.0",
-      "org.flywaydb"       % "flyway-core"         % "6.0.8",
+      "org.flywaydb"       % "flyway-core"         % "6.1.0",
       "org.http4s"        %% "http4s-dsl"          % http4sVersion,
       "org.http4s"        %% "http4s-blaze-server" % http4sVersion,
       "org.http4s"        %% "http4s-blaze-client" % http4sVersion,
@@ -49,8 +53,11 @@ lazy val root = (project in file("."))
       "org.scalatest"     %% "scalatest"           % "3.0.8"         % "test",
       "org.tpolecat"      %% "doobie-core"         % doobieVersion,
       "org.tpolecat"      %% "doobie-postgres"     % doobieVersion,
+      "org.tpolecat"      %% "doobie-scalatest"    % "0.8.6"         % "test",
+      "org.tpolecat"      %% "doobie-specs2"       % "0.8.6"         % "test",
       "org.typelevel"     %% "cats-core"           % catsVersion,
-      "org.typelevel"     %% "cats-effect"         % catsVersion
+      "org.typelevel"     %% "cats-effect"         % catsVersion,
+      "org.specs2"        %% "specs2-core"         % "4.6.0"         % "test"
     ),
     
     /*
@@ -95,8 +102,14 @@ lazy val root = (project in file("."))
         |import io.circe.syntax._
         |import io.circe.generic.semiauto._
         |import org.http4s.{Request, Uri}
+        |import org.flywaydb.core.Flyway
         |
-        |import clients.data._
+        |import clients.postgres._
+        |import codecs._
+        |import datamaps._
+        |import datatypes._
+        |import enums._
+        |import show._
         |
         |import java.util.UUID
         |
@@ -109,22 +122,7 @@ lazy val root = (project in file("."))
         |  Blocker.liftExecutionContext(ExecutionContexts.synchronous) // just for testing
         |)
         |
-        |val asset = Asset(
-        |  id = UUID.randomUUID(), 
-        |  refresh_id = UUID.randomUUID(),
-        |  steam_id = "steam_id",
-        |  appid = 1,
-        |  assetid = "assetid",
-        |  classid = "classid",
-        |  instanceid = "instanceid",
-        |  tradable = 0,
-        |  market_hash_name = "market_hash_name",
-        |  icon_url = "icon_url",
-        |  asset_type = "asset_type",
-        |  exterior = Some("exterior"),
-        |  rarity = "rarity",
-        |  item_data = "item_data",
-        |  sticker_info = "sticker_info"
-        |)
+        |val flyway: Flyway = Flyway.configure().dataSource("jdbc:postgresql://0.0.0.0:5432/inventory", "postgres", "password").load()
+        |val flywayClient = new FlywayClient(flyway)
   """.stripMargin
   )

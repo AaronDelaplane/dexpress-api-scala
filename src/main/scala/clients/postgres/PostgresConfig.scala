@@ -1,12 +1,12 @@
-package clients.sql
+package clients.postgres
 
 import cats.implicits._
 import ciris._
-import common._
+import codecs._
 import eu.timepit.refined.types.net.UserPortNumber
 import org.http4s.Uri
 
-final case class SQLConfig(
+final case class PostgresConfig(
     host: Uri,
     port: UserPortNumber,
     user: String,
@@ -17,19 +17,19 @@ final case class SQLConfig(
   def url: String = s"jdbc:postgresql://$host:$port/$database"
 }
 
-object SQLConfig {
-  val DEFAULT_POSTGRES_HOST: Uri = Uri.unsafeFromString("0.0.0.0")
+object PostgresConfig {
+  val DEFAULT_POSTGRES_HOST: Uri = Uri.unsafeFromString("localhost")
   val DEFAULT_POSTGRES_PORT: UserPortNumber = UserPortNumber.unsafeFrom(5432)
   val DEFAULT_POSTGRES_USER: String = "postgres"
   val DEFAULT_POSTGRES_PASSWORD: Secret[String] = Secret("password")
   val DEFAULT_POSTGRES_DATABASE: String = "inventory"
 
-  val configValue: ConfigValue[SQLConfig] =
+  val configValue: ConfigValue[PostgresConfig] =
     (
       env("POSTGRES_HOST").as[Uri].default(DEFAULT_POSTGRES_HOST),
       env("POSTGRES_PORT").as[UserPortNumber].default(DEFAULT_POSTGRES_PORT),
       env("POSTGRES_USER").as[String].default(DEFAULT_POSTGRES_USER),
       env("POSTGRES_PASSWORD").as[Secret[String]].default(DEFAULT_POSTGRES_PASSWORD),
       env("POSTGRES_DATABASE").as[String].default(DEFAULT_POSTGRES_DATABASE)
-    ).parMapN(SQLConfig.apply)
+    ).parMapN(PostgresConfig.apply)
 }

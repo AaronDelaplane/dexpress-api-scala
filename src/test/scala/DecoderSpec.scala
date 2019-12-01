@@ -1,11 +1,8 @@
-package steamclient
-
-import common.{SteamAsset, SteamDescription, SteamInventory, SteamMarketAction, SteamTag}
+import DecoderSpec._
 import io.circe.parser.parse
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json}
 import org.scalatest._
-import steamclient.DecoderSpec._
 
 import scala.io.Source
 

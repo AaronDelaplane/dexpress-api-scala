@@ -1,8 +1,9 @@
 import cats.effect.{ConcurrentEffect, ContextShift, IO, Resource}
-import clients.sql.{FlywayClient, PostgresClient, SQLConfig}
+import clients.postgres.{FlywayClient, PostgresClient, PostgresConfig}
 import clients.steam.{SteamClient, SteamClientConfig}
 import doobie.util.transactor.Transactor
 import org.flywaydb.core.Flyway
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
 final case class ServiceResources(
   serviceConfig: ServiceConfig,
@@ -12,23 +13,25 @@ final case class ServiceResources(
 )
 
 object ServiceResources {
+
+  val log = Slf4jLogger.getLogger[IO]
   
   def make(implicit CE: ConcurrentEffect[IO], CS: ContextShift[IO]): Resource[IO, ServiceResources] =
     for {
       serviceConfig     <- Resource.liftF(ServiceConfig.configValue.load)
       steamClientConfig <- Resource.liftF(SteamClientConfig.configValue.load)
       steamClient       <- SteamClient.resource(steamClientConfig)
-      sqlConfig         <- Resource.liftF(SQLConfig.configValue.load)
-      sqlTransactor      = Transactor.fromDriverManager(
-                             "org.postgresql.Driver",
-                             sqlConfig.url,
-                             sqlConfig.user,
-                             sqlConfig.password.value
-                           )
+      pgConfig          <- Resource.liftF(PostgresConfig.configValue.load)
+      pgTransactor       = Transactor.fromDriverManager(
+                              "org.postgresql.Driver",
+                              pgConfig.url,
+                              pgConfig.user,
+                              pgConfig.password.value
+                            )
       flyway            <- Resource.liftF(
                              IO.delay(
                                Flyway.configure()
-                                 .dataSource(sqlConfig.url, sqlConfig.user, sqlConfig.password.value)
+                                 .dataSource(pgConfig.url, pgConfig.user, pgConfig.password.value)
                                  .load()
                              )
                            )
@@ -36,7 +39,7 @@ object ServiceResources {
       ServiceResources(
         serviceConfig,
         steamClient,
-        new PostgresClient(sqlTransactor),
+        new PostgresClient(pgTransactor),
         new FlywayClient(flyway)
       )
 }
