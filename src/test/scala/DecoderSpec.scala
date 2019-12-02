@@ -1,10 +1,10 @@
 import DecoderSpec._
+import codecs._
+import datatypes._
 import io.circe.parser.parse
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json}
 import org.scalatest._
-import datatypes._
-import codecs._
 
 import scala.io.Source
 

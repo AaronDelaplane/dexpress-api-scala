@@ -5,37 +5,37 @@ import java.util.UUID
 import cats.data.NonEmptyList
 import cats.effect.IO
 import cats.implicits._
-import datatypes.{MaybeTradableAsset, SteamAsset, SteamDescription, SteamInventory, SteamTag, TradableAsset, _}
+import datatypes.{Asset, MaybeAsset, SteamAsset, SteamDescription, SteamInventory, SteamTag, _}
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
-object ToTradableAssets {
+object ToAssets {
   
   val log = Slf4jLogger.getLogger[IO]
 
-  def run(refreshId: UUID, steamId: String, steamInventory: SteamInventory): IO[NonEmptyList[TradableAsset]] =
+  def run(refreshId: UUID, steamId: String, steamInventory: SteamInventory): IO[NonEmptyList[Asset]] =
     for {
-      xs            <- toAssetsAndDescriptions(steamInventory).fold(s => IO.raiseError(new Exception(s)), IO.pure)
-      _             <- log.info({
-                         val as = xs._1.toList
-                         val ds = xs._2.toList
-                         s"""
-                           |unjoined-descriptions-summary
-                           |  descriptions-count:  ${ds.size}
-                           |  description-orphans: ${ds.filterNot(d => as.exists(a => isPair(a)(d))).size}   
-                           |  has-market-actions:  ${ds.filter(_.market_actions.isDefined).size}
-                           |  has-tags:            ${ds.filter(_.tags.nonEmpty).size}
-                           |  has-exterior-tag:    ${ds.flatMap(_.tags).filter(_.exists(isTag("exterior"))).size}   
-                           |""".stripMargin
-                       })
-      maybeTradableAssets <- buildMaybeTradableAssets(refreshId, steamId, xs).fold(s => IO.raiseError(new Exception(s)), IO.pure)
-      tradableAssets <- maybeTradableAssets.toList.flatMap(TradableAsset.fromMaybe).toNel
-                          .fold[IO[NonEmptyList[TradableAsset]]](IO.raiseError(new Exception("zero-assets-map-to-tradable-asset")))(_.pure[IO])                      
-      _              <- log.info(s"""
-                          |generated-assets-summary
-                          |  maybe-tradable-assets-count: ${maybeTradableAssets.size}
-                          |  tradable-assets-count:       ${tradableAssets.size}
-                          |""".stripMargin)
-    } yield tradableAssets
+      xs          <- toAssetsAndDescriptions(steamInventory).fold(s => IO.raiseError(new Exception(s)), IO.pure)
+      _           <- log.info({
+                       val as = xs._1.toList
+                       val ds = xs._2.toList
+                       s"""
+                         |unjoined-descriptions-summary
+                         |  descriptions-count:  ${ds.size}
+                         |  description-orphans: ${ds.filterNot(d => as.exists(a => isPair(a)(d))).size}   
+                         |  has-market-actions:  ${ds.filter(_.market_actions.isDefined).size}
+                         |  has-tags:            ${ds.filter(_.tags.nonEmpty).size}
+                         |  has-exterior-tag:    ${ds.flatMap(_.tags).filter(_.exists(isTag("exterior"))).size}   
+                         |""".stripMargin
+                     })
+      maybeAssets <- buildMaybeAssets(refreshId, steamId, xs).fold(s => IO.raiseError(new Exception(s)), IO.pure)
+      assets      <- maybeAssets.toList.flatMap(Asset.fromMaybe).toNel
+                       .fold[IO[NonEmptyList[Asset]]](IO.raiseError(new Exception("zero-assets-map-to-tradable-asset")))(_.pure[IO])                      
+      _           <- log.info(s"""
+                       |generated-assets-summary
+                       |  maybe-tradable-assets-count: ${maybeAssets.size}
+                       |  tradable-assets-count:       ${assets.size}
+                       |""".stripMargin)
+    } yield assets
 
   private def toAssetsAndDescriptions(si: SteamInventory): ErrorOr[(NonEmptyList[SteamAsset], NonEmptyList[SteamDescription])] = {
     type R = (NonEmptyList[SteamAsset], NonEmptyList[SteamDescription])
@@ -54,18 +54,18 @@ object ToTradableAssets {
     }
   }
 
-  private def buildMaybeTradableAssets(refreshId: UUID, steamId: String, xs: (NonEmptyList[SteamAsset], NonEmptyList[SteamDescription])): ErrorOr[NonEmptyList[MaybeTradableAsset]] = {
-    type R = NonEmptyList[MaybeTradableAsset]
+  private def buildMaybeAssets(refreshId: UUID, steamId: String, xs: (NonEmptyList[SteamAsset], NonEmptyList[SteamDescription])): ErrorOr[NonEmptyList[MaybeAsset]] = {
+    type R = NonEmptyList[MaybeAsset]
     val (errors, assets) =
       xs._1.toList.map(a =>
         xs._2
           .find(isPair(a))
-          .fold("no-matching-description-for-asset".asLeft[MaybeTradableAsset])(buildAsset(refreshId, steamId, a))
+          .fold("no-matching-description-for-asset".asLeft[MaybeAsset])(buildMaybeAsset(refreshId, steamId, a))
       ).separate
-    (NonEmptyList.fromList[String](errors), NonEmptyList.fromList[MaybeTradableAsset](assets)) match {
-      case (None, None)            => "no-errors-or-assets-generated".asLeft[NonEmptyList[MaybeTradableAsset]]
-      case (Some(errors), Some(_)) => s"errors-&-assets-generated: $errors".asLeft[NonEmptyList[MaybeTradableAsset]]
-      case (Some(errors), None)    => s"only-errors-generated: $errors".asLeft[NonEmptyList[MaybeTradableAsset]]
+    (NonEmptyList.fromList[String](errors), NonEmptyList.fromList[MaybeAsset](assets)) match {
+      case (None, None)            => "no-errors-or-assets-generated".asLeft[NonEmptyList[MaybeAsset]]
+      case (Some(errors), Some(_)) => s"errors-&-assets-generated: $errors".asLeft[NonEmptyList[MaybeAsset]]
+      case (Some(errors), None)    => s"only-errors-generated: $errors".asLeft[NonEmptyList[MaybeAsset]]
       case (None, Some(assets))    => assets.asRight[String]
     }
   }
@@ -73,7 +73,7 @@ object ToTradableAssets {
   private def isPair(a: SteamAsset)(d: SteamDescription): Boolean =
     (d.classid === a.classid) && (d.instanceid === a.instanceid)
 
-  private def buildAsset(refreshId: UUID, steamId: String, a: SteamAsset)(d: SteamDescription): ErrorOr[MaybeTradableAsset] =
+  private def buildMaybeAsset(refreshId: UUID, steamId: String, a: SteamAsset)(d: SteamDescription): ErrorOr[MaybeAsset] =
     for {
       id               <- UUID.randomUUID().asRight[String]
       appid            <- a.appid.fold("appid-not-defined".asLeft[Int])(_.asRight)
@@ -94,7 +94,7 @@ object ToTradableAssets {
       maybe_link_id     = d.market_actions.flatMap(_.headOption).flatMap(_.link).flatMap(toMaybeLinkId)
       sticker_info     <- "sticker-info".asRight[String]
     } yield
-      MaybeTradableAsset(
+      MaybeAsset(
         id               = id,
         refresh_id       = refreshId,
         steam_id         = steamId,

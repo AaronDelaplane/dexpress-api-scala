@@ -1,8 +1,9 @@
+import java.util.UUID
+
 import cats.effect.IO
 import clients.postgres.Statements._
 import doobie._
 import org.scalatest._
-import java.util.UUID
 
 class StatementsSpec extends FunSuite with Matchers with doobie.scalatest.IOChecker {
   

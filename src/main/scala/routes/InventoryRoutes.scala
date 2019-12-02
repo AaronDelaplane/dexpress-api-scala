@@ -34,11 +34,11 @@ class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient) extend
         .mapN((action, count) =>
           action match {
             case InventoryAction.refresh => for {
-               inventory      <- steamClient.getInventory(steamId, count.value)
-               refreshId      <- randomUUID().pure[IO]
-               tradableAssets <- datamaps.toTradableAssets(refreshId, steamId, inventory)
-               _              <- pgClient.insert(tradableAssets)
-               response       <- NoContent()
+               inventory  <- steamClient.getInventory(steamId, count.value)
+               refreshId  <- randomUUID().pure[IO]
+               assets     <- datamaps.toAssets(refreshId, steamId, inventory)
+               _          <- pgClient.insert(assets)
+               response   <- NoContent()
             } yield response
           }  
         )

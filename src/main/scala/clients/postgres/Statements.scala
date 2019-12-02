@@ -3,9 +3,8 @@ package clients.postgres
 import java.util.UUID
 
 import cats.data.NonEmptyList
-import datatypes.TradableAsset
+import datatypes.Asset
 import doobie._
-import doobie.free.connection.ConnectionIO
 import doobie.implicits._
 import doobie.postgres._
 import doobie.postgres.implicits._
@@ -14,8 +13,8 @@ object Statements {
     
   implicit val han = LogHandler.jdkLogHandler  
   
-  def insertAssets(as: NonEmptyList[TradableAsset]): Update[TradableAsset] =
-    Update[TradableAsset]("""
+  def insertAssets(as: NonEmptyList[Asset]): Update[Asset] =
+    Update[Asset]("""
       insert into tradable_assets (
         id,
         refresh_id,
@@ -35,8 +34,8 @@ object Statements {
       ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """)
     
-    def selectAsset(assedId: UUID): Query0[TradableAsset] =
-      sql"select * from tradable_assets where id = $assedId".query[TradableAsset]
+    def selectAsset(assedId: UUID): Query0[Asset] =
+      sql"select * from tradable_assets where id = $assedId".query[Asset]
     
     def updateAssetTradingState(assetId: UUID, tradingState: Boolean): Update0 =
       sql"update tradable_assets set trading = $tradingState where id = $assetId".update  

@@ -1,3 +1,3 @@
 package object datamaps {
-  def toTradableAssets = ToTradableAssets.run _
+  def toAssets = ToAssets.run _
 }

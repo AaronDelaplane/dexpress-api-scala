@@ -2,8 +2,8 @@ import cats.effect.{ConcurrentEffect, ContextShift, IO, Resource}
 import clients.postgres.{FlywayClient, PostgresClient, PostgresConfig}
 import clients.steam.{SteamClient, SteamClientConfig}
 import doobie.util.transactor.Transactor
-import org.flywaydb.core.Flyway
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.flywaydb.core.Flyway
 
 final case class ServiceResources(
   serviceConfig: ServiceConfig,

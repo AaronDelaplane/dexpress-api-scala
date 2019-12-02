@@ -1,14 +1,14 @@
 import cats.data.NonEmptyList
 import cats.implicits._
 import cats.{Monoid, Show}
-import datatypes.MaybeTradableAsset
+import datatypes.MaybeAsset
 
 package object show {
   
   /*
   show instances -------------------------------------------------------------------------------------------------------
    */
-  implicit def assetShow: Show[MaybeTradableAsset] = Show.show(x =>
+  implicit def assetShow: Show[MaybeAsset] = Show.show(x =>
     s"""
        |id:               ${x.id}
        |refresh_id:       ${x.refresh_id}

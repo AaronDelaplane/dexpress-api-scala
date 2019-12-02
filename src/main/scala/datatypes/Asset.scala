@@ -2,7 +2,7 @@ package datatypes
 
 import java.util.UUID
 
-final case class TradableAsset(
+final case class Asset(
   id:               UUID,
   refresh_id:       UUID,
   steam_id:         String,
@@ -20,12 +20,12 @@ final case class TradableAsset(
   trading:          Boolean
 )
 
-object TradableAsset {
-  def fromMaybe(a: MaybeTradableAsset): Option[TradableAsset] =
+object Asset {
+  def fromMaybe(a: MaybeAsset): Option[Asset] =
     a.tradable match {
       case false => None
       case true  => Some(
-                      TradableAsset(
+                      Asset(
                         id               = a.id,
                         refresh_id       = a.refresh_id,
                         steam_id         = a.steam_id,
