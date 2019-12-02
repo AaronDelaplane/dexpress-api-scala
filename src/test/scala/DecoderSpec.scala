@@ -3,6 +3,8 @@ import io.circe.parser.parse
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json}
 import org.scalatest._
+import datatypes._
+import codecs._
 
 import scala.io.Source
 
@@ -38,14 +40,7 @@ class DecoderSpec extends FlatSpec with Matchers {
     attemptDecodeEncode[SteamInventory]("steam-inventory.json")
 
   "steam inventory codecs" should "decode & encode large json" in
-    attemptDecodeEncode[SteamInventory]("steam-inventory-large.json")
-  
-  "steam inventory codecs" should "return equal number of assets & descriptions" in {
-    val si = parse(getResourceUnsafe("steam-inventory-large.json"))
-      .getOrElse(Json.Null)
-      .as[SteamInventory].toOption.get
-    si.assets.get.size should equal(si.descriptions.get.size)
-  }             
+    attemptDecodeEncode[SteamInventory]("steam-inventory-large.json")            
    
 }
 

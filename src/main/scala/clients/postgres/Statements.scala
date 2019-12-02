@@ -35,16 +35,10 @@ object Statements {
       ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """)
     
-    def selectAsset(assedId: UUID): ConnectionIO[TradableAsset] =
-      sql"select * from tradable_assets where id = $assedId".query[TradableAsset].unique
+    def selectAsset(assedId: UUID): Query0[TradableAsset] =
+      sql"select * from tradable_assets where id = $assedId".query[TradableAsset]
     
     def updateAssetTradingState(assetId: UUID, tradingState: Boolean): Update0 =
-      sql"update tradable_assets set trading = $tradingState where id = $assetId".update
-  
-//  def selectAsset(uuid: UUID): ConnectionIO[TradableAsset] =
-//    sql"select from tradable_assets where id = $uuid"
-//      .query[TradableAsset]
-//      .unique
-    
+      sql"update tradable_assets set trading = $tradingState where id = $assetId".update  
   
 }

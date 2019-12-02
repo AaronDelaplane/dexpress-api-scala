@@ -18,6 +18,7 @@ final case class PostgresConfig(
 }
 
 object PostgresConfig {
+  // note: '0.0.0.0' will cause flyway's attempt to connect to fail
   val DEFAULT_POSTGRES_HOST: Uri = Uri.unsafeFromString("localhost")
   val DEFAULT_POSTGRES_PORT: UserPortNumber = UserPortNumber.unsafeFrom(5432)
   val DEFAULT_POSTGRES_USER: String = "postgres"

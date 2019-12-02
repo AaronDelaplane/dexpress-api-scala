@@ -2,6 +2,7 @@ import cats.effect.IO
 import clients.postgres.Statements._
 import doobie._
 import org.scalatest._
+import java.util.UUID
 
 class StatementsSpec extends FunSuite with Matchers with doobie.scalatest.IOChecker {
   
@@ -13,6 +14,10 @@ class StatementsSpec extends FunSuite with Matchers with doobie.scalatest.IOChec
 
   test("update asset trading state") { 
     check(updateAssetTradingState(java.util.UUID.randomUUID, true))
+  }
+  
+  test("select asset by id") {
+    check(selectAsset(UUID.randomUUID))
   }
 
 }

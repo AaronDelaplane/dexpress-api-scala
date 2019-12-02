@@ -2,7 +2,7 @@ create extension if not exists "uuid-ossp";
 
 create table tradable_assets(
     id               uuid    not null primary key,
-    refresh_id       text    not null,
+    refresh_id       uuid    not null,
     steam_id         text    not null,
     appid            int     not null,
     assetid          text    not null,  

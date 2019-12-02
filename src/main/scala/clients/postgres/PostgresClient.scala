@@ -27,7 +27,7 @@ implicit val han = LogHandler.jdkLogHandler
     Statements.insertAssets(as).updateMany(as).transact(xa)
     
   def selectAsset (assetId: UUID): IO[TradableAsset] =
-    Statements.selectAsset(assetId).transact(xa) 
+    Statements.selectAsset(assetId).unique.transact(xa) 
   
   def updateAssetTradingState(uuid: UUID, b: Boolean): IO[Int] =
     Statements.updateAssetTradingState(uuid, b).run.transact(xa)
