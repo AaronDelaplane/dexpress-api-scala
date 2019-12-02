@@ -1,6 +1,8 @@
 create extension if not exists "uuid-ossp";
 
-create table tradable_assets(
+set time zone 'UTC';
+
+create table assets(
     id               uuid    not null primary key,
     refresh_id       uuid    not null,
     steam_id         text    not null,
@@ -11,10 +13,15 @@ create table tradable_assets(
     market_hash_name text    not null,
     icon_url         text    not null,
     asset_type       text    not null,
-    exterior         text,
+    exterior         text,   -- must be optional
     rarity           text    not null,
-    link_id          text,
+    link_id          text,   -- must be optional
     sticker_info     text    not null,
     trading          boolean not null
 );
+
+create table refresh_events(
+    id   uuid not null primary key,
+    time timestamptz not null                      
+)
     

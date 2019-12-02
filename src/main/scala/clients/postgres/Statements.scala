@@ -15,7 +15,7 @@ object Statements {
   
   def insertAssets(as: NonEmptyList[Asset]): Update[Asset] =
     Update[Asset]("""
-      insert into tradable_assets (
+      insert into assets (
         id,
         refresh_id,
         steam_id,
@@ -35,9 +35,9 @@ object Statements {
     """)
     
     def selectAsset(assedId: UUID): Query0[Asset] =
-      sql"select * from tradable_assets where id = $assedId".query[Asset]
+      sql"select * from assets where id = $assedId".query[Asset]
     
     def updateAssetTradingState(assetId: UUID, tradingState: Boolean): Update0 =
-      sql"update tradable_assets set trading = $tradingState where id = $assetId".update  
+      sql"update assets set trading = $tradingState where id = $assetId".update  
   
 }
