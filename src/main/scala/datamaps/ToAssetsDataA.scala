@@ -5,14 +5,14 @@ import java.util.UUID
 import cats.data.NonEmptyList
 import cats.effect.IO
 import cats.implicits._
-import datatypes.{Asset, MaybeAsset, SteamAsset, SteamDescription, SteamInventory, SteamTag, _}
+import datatypes.{AssetDataA, MaybeAssetDataA, SteamAsset, SteamDescription, SteamInventory, SteamTag, _}
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
-object ToAssets {
+object ToAssetsDataA {
   
   val log = Slf4jLogger.getLogger[IO]
 
-  def run(refreshId: UUID, steamId: String, steamInventory: SteamInventory): IO[NonEmptyList[Asset]] =
+  def run(refreshId: UUID, steamId: String, steamInventory: SteamInventory): IO[NonEmptyList[AssetDataA]] =
     for {
       xs          <- toAssetsAndDescriptions(steamInventory).fold(s => IO.raiseError(new Exception(s)), IO.pure)
       _           <- log.info({
@@ -28,8 +28,8 @@ object ToAssets {
                          |""".stripMargin
                      })
       maybeAssets <- buildMaybeAssets(refreshId, steamId, xs).fold(s => IO.raiseError(new Exception(s)), IO.pure)
-      assets      <- maybeAssets.toList.flatMap(Asset.fromMaybe).toNel
-                       .fold[IO[NonEmptyList[Asset]]](IO.raiseError(new Exception("zero-assets-map-to-tradable-asset")))(_.pure[IO])                      
+      assets      <- maybeAssets.toList.flatMap(AssetDataA.fromMaybe).toNel
+                       .fold[IO[NonEmptyList[AssetDataA]]](IO.raiseError(new Exception("zero-assets-map-to-tradable-asset")))(_.pure[IO])                      
       _           <- log.info(s"""
                        |generated-assets-summary
                        |  maybe-tradable-assets-count: ${maybeAssets.size}
@@ -54,18 +54,18 @@ object ToAssets {
     }
   }
 
-  private def buildMaybeAssets(refreshId: UUID, steamId: String, xs: (NonEmptyList[SteamAsset], NonEmptyList[SteamDescription])): ErrorOr[NonEmptyList[MaybeAsset]] = {
-    type R = NonEmptyList[MaybeAsset]
+  private def buildMaybeAssets(refreshId: UUID, steamId: String, xs: (NonEmptyList[SteamAsset], NonEmptyList[SteamDescription])): ErrorOr[NonEmptyList[MaybeAssetDataA]] = {
+    type R = NonEmptyList[MaybeAssetDataA]
     val (errors, assets) =
       xs._1.toList.map(a =>
         xs._2
           .find(isPair(a))
-          .fold("no-matching-description-for-asset".asLeft[MaybeAsset])(buildMaybeAsset(refreshId, steamId, a))
+          .fold("no-matching-description-for-asset".asLeft[MaybeAssetDataA])(buildMaybeAsset(refreshId, steamId, a))
       ).separate
-    (NonEmptyList.fromList[String](errors), NonEmptyList.fromList[MaybeAsset](assets)) match {
-      case (None, None)            => "no-errors-or-assets-generated".asLeft[NonEmptyList[MaybeAsset]]
-      case (Some(errors), Some(_)) => s"errors-&-assets-generated: $errors".asLeft[NonEmptyList[MaybeAsset]]
-      case (Some(errors), None)    => s"only-errors-generated: $errors".asLeft[NonEmptyList[MaybeAsset]]
+    (NonEmptyList.fromList[String](errors), NonEmptyList.fromList[MaybeAssetDataA](assets)) match {
+      case (None, None)            => "no-errors-or-assets-generated".asLeft[NonEmptyList[MaybeAssetDataA]]
+      case (Some(errors), Some(_)) => s"errors-&-assets-generated: $errors".asLeft[NonEmptyList[MaybeAssetDataA]]
+      case (Some(errors), None)    => s"only-errors-generated: $errors".asLeft[NonEmptyList[MaybeAssetDataA]]
       case (None, Some(assets))    => assets.asRight[String]
     }
   }
@@ -73,7 +73,7 @@ object ToAssets {
   private def isPair(a: SteamAsset)(d: SteamDescription): Boolean =
     (d.classid === a.classid) && (d.instanceid === a.instanceid)
 
-  private def buildMaybeAsset(refreshId: UUID, steamId: String, a: SteamAsset)(d: SteamDescription): ErrorOr[MaybeAsset] =
+  private def buildMaybeAsset(refreshId: UUID, steamId: String, a: SteamAsset)(d: SteamDescription): ErrorOr[MaybeAssetDataA] =
     for {
       id               <- UUID.randomUUID().asRight[String]
       appid            <- a.appid.fold("appid-not-defined".asLeft[Int])(_.asRight)
@@ -94,7 +94,7 @@ object ToAssets {
       maybe_link_id     = d.market_actions.flatMap(_.headOption).flatMap(_.link).flatMap(toMaybeLinkId)
       sticker_info     <- "sticker-info".asRight[String]
     } yield
-      MaybeAsset(
+      MaybeAssetDataA(
         id               = id,
         refresh_id       = refreshId,
         steam_id         = steamId,

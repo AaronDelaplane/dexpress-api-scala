@@ -5,7 +5,7 @@ import java.util.UUID
 /*
 An intermediary data type, which may or may not be able to be mapped to a `TradableAsset`
  */
-final case class MaybeAsset(
+final case class MaybeAssetDataA(
   id:               UUID,
   refresh_id:       UUID,
   steam_id:         String,

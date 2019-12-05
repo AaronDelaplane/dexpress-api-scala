@@ -18,7 +18,7 @@ class StatementsSpec extends FunSuite with Matchers with doobie.scalatest.IOChec
   }
   
   test("select asset by id") {
-    check(selectAsset(UUID.randomUUID))
+    check(selectAssetDataA(UUID.randomUUID))
   }
 
 }

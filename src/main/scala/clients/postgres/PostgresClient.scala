@@ -4,7 +4,7 @@ import java.util.UUID
 
 import cats.data.NonEmptyList
 import cats.effect.IO
-import datatypes.Asset
+import datatypes.AssetDataA
 import doobie.implicits._
 import doobie.util.log.LogHandler
 import doobie.util.transactor.Transactor
@@ -21,11 +21,11 @@ implicit val han = LogHandler.jdkLogHandler
       case Right(_)        => NoContent()
     }
   
-  def insert(as: NonEmptyList[Asset]): IO[Int] =
+  def insert(as: NonEmptyList[AssetDataA]): IO[Int] =
     Statements.insertAssets(as).updateMany(as).transact(xa)
     
-  def selectAsset (assetId: UUID): IO[Asset] =
-    Statements.selectAsset(assetId).unique.transact(xa) 
+  def selectAssetDataA(assetId: UUID): IO[AssetDataA] =
+    Statements.selectAssetDataA(assetId).unique.transact(xa) 
   
   def updateAssetTradingState(uuid: UUID, b: Boolean): IO[Int] =
     Statements.updateAssetTradingState(uuid, b).run.transact(xa)

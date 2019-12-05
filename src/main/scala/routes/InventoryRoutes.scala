@@ -34,17 +34,29 @@ class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient) extend
         .mapN((action, count) =>
           action match {
             case InventoryAction.refresh => for {
-               inventory  <- steamClient.getInventory(steamId, count.value)
-               refreshId  <- randomUUID().pure[IO]
-               assets     <- datamaps.toAssets(refreshId, steamId, inventory)
-               _          <- pgClient.insert(assets)
-               response   <- NoContent()
+               inventory   <- steamClient.getInventory(steamId, count.value)
+               refreshId   <- randomUUID().pure[IO]
+               assetsDataA <- datamaps.toAssetsDataA(refreshId, steamId, inventory)
+               _           <- pgClient.insert(assetsDataA)
+               response    <- NoContent()
             } yield response
           }  
         )
         .valueOr(errors => BadRequest(errors.show))
 
-      
+    case PUT -> Root / "asset" :? AssetIdQPM(assetIdValidated) +& TradingQPM(tradingValidated) =>
+      (assetIdValidated, tradingValidated)
+        .mapN((assetId, trading) => 
+          for {
+            assetA   <- pgClient.selectAssetDataA(assetId)
+            response <- Ok("")
+//            response <- if (assetA.trading === trading) BadRequest("attempt-to-update-to-existing-state")
+//                        else pgClient.updateAssetTradingState(assetId, trading) *> NoContent()
+          } yield response 
+        )
+        .valueOr(errors => BadRequest(errors.show))    
+                            
+                            
     // set state of asset to `trading` || `nottrading`. return error if state already === 
 //    case PUT -> Root / "asset" :? AssetIdQPM(assetIdValidated) +& TradingQPM(tradingValidated) =>
 //      (assetIdValidated, tradingValidated)
