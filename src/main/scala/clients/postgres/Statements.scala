@@ -15,7 +15,7 @@ object Statements {
   
   def insertAssets(as: NonEmptyList[Asset]): Update[Asset] =
     Update[Asset]("""
-      insert into assets (
+      insert into assets_data_a (
         id,
         refresh_id,
         steam_id,
@@ -29,9 +29,8 @@ object Statements {
         exterior,
         rarity,
         link_id,
-        sticker_info,
-        trading
-      ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        sticker_info
+      ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """)
     
     def selectAsset(assedId: UUID): Query0[Asset] =

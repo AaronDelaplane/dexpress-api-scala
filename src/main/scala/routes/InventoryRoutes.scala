@@ -46,16 +46,16 @@ class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient) extend
 
       
     // set state of asset to `trading` || `nottrading`. return error if state already === 
-    case PUT -> Root / "asset" :? AssetIdQPM(assetIdValidated) +& TradingQPM(tradingValidated) =>
-      (assetIdValidated, tradingValidated)
-        .mapN((assetId, trading) => 
-          for {
-            assetA   <- pgClient.selectAsset(assetId)
-            response <- if (assetA.trading === trading) BadRequest("attempt-to-update-to-existing-state")
-                        else pgClient.updateAssetTradingState(assetId, trading) *> NoContent()
-          } yield response 
-        )
-        .valueOr(errors => BadRequest(errors.show))  
+//    case PUT -> Root / "asset" :? AssetIdQPM(assetIdValidated) +& TradingQPM(tradingValidated) =>
+//      (assetIdValidated, tradingValidated)
+//        .mapN((assetId, trading) => 
+//          for {
+//            assetA   <- pgClient.selectAsset(assetId)
+//            response <- if (assetA.trading === trading) BadRequest("attempt-to-update-to-existing-state")
+//                        else pgClient.updateAssetTradingState(assetId, trading) *> NoContent()
+//          } yield response 
+//        )
+//        .valueOr(errors => BadRequest(errors.show))  
   
   }
 }
