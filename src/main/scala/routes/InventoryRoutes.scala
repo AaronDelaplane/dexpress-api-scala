@@ -6,6 +6,7 @@ import cats.effect.IO
 import cats.implicits._
 import clients.postgres.PostgresClient
 import clients.steam.SteamClient
+import clients.csfloat.CsFloatClient
 import codecs._
 import enums._
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
@@ -22,13 +23,13 @@ todo refresh existing inventory
 todo add refresh time limit   
  */
 
-class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient) extends Http4sDsl[IO] {
+class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient, csFloatClient: CsFloatClient) extends Http4sDsl[IO] {
 
   implicit def logger = Slf4jLogger.getLogger[IO]
   
   def routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
     
-    // source remote inventory, validate, and write to local
+    // source remote inventory, validate, and write to postgres
     case GET -> Root / "inventory" / steamId :? InventoryActionQPM(actionValidated) +& CountQPM(countValidated) =>
       (actionValidated, countValidated)
         .mapN((action, count) =>
@@ -37,7 +38,7 @@ class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient) extend
                inventory   <- steamClient.getInventory(steamId, count.value)
                refreshId   <- randomUUID().pure[IO]
                assetsDataA <- datamaps.toAssetsDataA(refreshId, steamId, inventory)
-               _           <- pgClient.insert(assetsDataA)
+               _           <- pgClient.insertMany(assetsDataA)
                response    <- NoContent()
             } yield response
           }  
@@ -48,10 +49,9 @@ class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient) extend
       (assetIdValidated, tradingValidated)
         .mapN((assetId, trading) => 
           for {
-            assetA   <- pgClient.selectAssetDataA(assetId)
+            assetDataA <- pgClient.selectAssetDataA(assetId)
+            assetDataB <- csFloatClient.getAssetDataB(assetDataA.assetid)
             response <- Ok("")
-//            response <- if (assetA.trading === trading) BadRequest("attempt-to-update-to-existing-state")
-//                        else pgClient.updateAssetTradingState(assetId, trading) *> NoContent()
           } yield response 
         )
         .valueOr(errors => BadRequest(errors.show))    

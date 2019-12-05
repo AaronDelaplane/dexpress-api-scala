@@ -13,9 +13,9 @@ class StatementsSpec extends FunSuite with Matchers with doobie.scalatest.IOChec
     "org.postgresql.Driver", "jdbc:postgresql:inventory", "postgres", "password"
   )
 
-  test("update asset trading state") { 
-    check(updateAssetTradingState(java.util.UUID.randomUUID, true))
-  }
+//  test("update asset trading state") { 
+//    check(updateAssetTradingState(java.util.UUID.randomUUID, true))
+//  }
   
   test("select asset by id") {
     check(selectAssetDataA(UUID.randomUUID))

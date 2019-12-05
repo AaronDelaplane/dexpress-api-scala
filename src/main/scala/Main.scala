@@ -21,7 +21,7 @@ object Main extends IOApp with Http4sDsl[IO] {
         .withHttpApp {
           
           val healthRoutes    = new HealthRoutes
-          val inventoryRoutes = new InventoryRoutes(resources.sqlClient, resources.steamClient)
+          val inventoryRoutes = new InventoryRoutes(resources.pgClient, resources.steamClient, resources.csgoFloatClient)
           
           val routes: HttpRoutes[IO] = Router[IO](
             "/" -> {

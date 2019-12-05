@@ -21,7 +21,7 @@ implicit val han = LogHandler.jdkLogHandler
       case Right(_)        => NoContent()
     }
   
-  def insert(as: NonEmptyList[AssetDataA]): IO[Int] =
+  def insertMany(as: NonEmptyList[AssetDataA]): IO[Int] =
     Statements.insertAssets(as).updateMany(as).transact(xa)
     
   def selectAssetDataA(assetId: UUID): IO[AssetDataA] =

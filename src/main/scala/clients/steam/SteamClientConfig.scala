@@ -5,7 +5,7 @@ import codecs.uriDecoder
 import org.http4s.Uri
 
 final case class SteamClientConfig(
-    steamUri: Uri
+    steamUri: Uri // todo change to just 'uri' here and in other configs
 )
 
 object SteamClientConfig {
