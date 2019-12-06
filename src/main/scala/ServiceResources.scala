@@ -1,10 +1,8 @@
 import cats.effect.{ConcurrentEffect, ContextShift, IO, Resource}
+import clients.csfloat.{CsFloatClient, CsFloatConfig}
 import clients.postgres.{FlywayClient, PostgresClient, PostgresConfig}
 import clients.steam.{SteamClient, SteamClientConfig}
-import clients.csfloat.CsFloatClient
-import clients.csfloat.CsFloatConfig
 import doobie.util.transactor.Transactor
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.flywaydb.core.Flyway
 
 final case class ServiceResources(
@@ -19,7 +17,7 @@ final case class ServiceResources(
 
 object ServiceResources {
 
-  val log = Slf4jLogger.getLogger[IO]
+  //private val logger = Slf4jLogger.getLogger[IO]
   
   def make(implicit CE: ConcurrentEffect[IO], CS: ContextShift[IO]): Resource[IO, ServiceResources] =
     for {
@@ -51,5 +49,3 @@ object ServiceResources {
         steamClient
       )
 }
-
-

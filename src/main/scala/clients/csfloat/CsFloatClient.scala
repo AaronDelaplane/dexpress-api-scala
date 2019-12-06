@@ -1,11 +1,12 @@
 package clients.csfloat
 
+import java.util.UUID
+
 import cats.effect.{ConcurrentEffect, IO, Resource}
 import datatypes.AssetDataB
 import org.http4s.client.Client
-import org.http4s.dsl.Http4sDsl
 import org.http4s.client.blaze.BlazeClientBuilder
-import java.util.UUID
+import org.http4s.dsl.Http4sDsl
 
 import scala.concurrent.ExecutionContext.global
 

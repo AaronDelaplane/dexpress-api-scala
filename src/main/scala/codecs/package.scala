@@ -21,19 +21,19 @@ package object codecs {
   steam codecs ---------------------------------------------------------------------------------------------------------
    */
   implicit def steamAssetDecoder: Decoder[SteamAsset] =
-    Decoder.forProduct6("appid","contextid","assetid","classid","instanceid","amount")(SteamAsset.apply)
+    Decoder.forProduct6("classid", "instanceid", "appid", "contextid", "assetid", "amount")(SteamAsset.apply)
   implicit def steamAssetEncoder: Encoder[SteamAsset] =
-    Encoder.forProduct6("appid","contextid","assetid","classid","instanceid","amount")(
+    Encoder.forProduct6("classid", "instanceid", "appid", "contextid", "assetid", "amount")(
       x => (x.appid, x.contextid, x.assetid, x.classid, x.instanceid, x.amount))
 
   implicit def steamDescriptionDecoder: Decoder[SteamDescription] =
-    Decoder.forProduct9(
-      "appid", "classid", "instanceid", "icon_url", "tradable", "type", "market_hash_name", "tags", "market_actions"
+    Decoder.forProduct10(
+      "classid", "instanceid", "appid", "icon_url", "tradable", "type", "market_hash_name", "tags", "market_actions", "descriptions"
     )(SteamDescription.apply)
   implicit def steamDescriptionEncoder: Encoder[SteamDescription] =
-    Encoder.forProduct9(
-      "appid", "classid", "instanceid", "icon_url", "tradable", "type", "market_hash_name", "tags", "market_actions"
-    )(x => (x.appid, x.classid, x.instanceid, x.icon_url, x.tradable, x.`type`, x.market_hash_name, x.tags, x.market_actions))
+    Encoder.forProduct10(
+      "classid", "instanceid", "appid", "icon_url", "tradable", "type", "market_hash_name", "tags", "market_actions", "descriptions"
+    )(x => (x.appid, x.classid, x.instanceid, x.icon_url, x.tradable, x.`type`, x.market_hash_name, x.tags, x.market_actions, x.descriptions))
   
   implicit def steamInventoryDecoder: Decoder[SteamInventory] =
     Decoder.forProduct2("assets", "descriptions")(SteamInventory.apply)
@@ -48,9 +48,16 @@ package object codecs {
     Encoder.forProduct1("link")(x => (x.link))
 
   implicit def steamTagDecoder: Decoder[SteamTag] =
-    Decoder.forProduct2("category", "localized_tag_name")(SteamTag.apply)
+    Decoder.forProduct5("category", "internal_name", "localized_category_name", "localized_tag_name", "color")(SteamTag.apply)
   implicit def steamTagEncoder: Encoder[SteamTag] =
-    Encoder.forProduct2("category", "localized_tag_name")(x => (x.category, x.localized_tag_name))
+    Encoder.forProduct5(
+      "category", "internal_name", "localized_category_name", "localized_tag_name", "color"
+    )(x => (x.category, x.internal_name, x.localized_category_name, x.localized_tag_name, x.color))
+   
+  implicit def steamNestedDescriptionDecoder: Decoder[SteamNestedDescription] =
+    Decoder.forProduct2("type", "value")(SteamNestedDescription.apply)
+  implicit def steamNestedDescriptionEncoder: Encoder[SteamNestedDescription] =
+    Encoder.forProduct2("type", "value")(x => (x.`type`, x.value))
   
   /*
   config codecs --------------------------------------------------------------------------------------------------------

@@ -13,7 +13,7 @@ import scala.concurrent.ExecutionContext.global
 
 class SteamClient(config: SteamClientConfig, httpClient: Client[IO]) extends Http4sDsl[IO] {
   
-  val log = Slf4jLogger.getLogger[IO]
+  private val logger = Slf4jLogger.getLogger[IO]
   
   def getInventory(steamId: String, count: Int): IO[SteamInventory] =
     for {
@@ -21,7 +21,7 @@ class SteamClient(config: SteamClientConfig, httpClient: Client[IO]) extends Htt
               Request[IO]()
                 .withMethod(GET)
                 .withUri(Uri.unsafeFromString(s"${config.steamUri}/inventory/$steamId/730/2?l=english&count=$count")))
-      _  <- log.info(s"""
+      _  <- logger.info(s"""
               |steam-inventory-fetch-results:
               |  assets-count:       ${si.assets.map(_.size)}
               |  descriptions-count: ${si.descriptions.map(_.size)}

@@ -89,6 +89,8 @@ lazy val root = (project in file("."))
         |import doobie._
         |import doobie.implicits._
         |import doobie.util.ExecutionContexts
+        |import doobie.postgres._
+        |import doobie.postgres.implicits._
         |import eu.timepit.refined._
         |import eu.timepit.refined.api._
         |import eu.timepit.refined.auto._

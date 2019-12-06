@@ -1,10 +1,8 @@
-import java.util.UUID
-
 import cats.effect.IO
 import clients.postgres.Statements._
+import datatypes.AssetDataA
 import doobie._
 import org.scalatest._
-
 class StatementsSpec extends FunSuite with Matchers with doobie.scalatest.IOChecker {
   
   implicit val cs = IO.contextShift(ExecutionContexts.synchronous)
@@ -17,8 +15,12 @@ class StatementsSpec extends FunSuite with Matchers with doobie.scalatest.IOChec
 //    check(updateAssetTradingState(java.util.UUID.randomUUID, true))
 //  }
   
-  test("select asset by id") {
-    check(selectAssetDataA(UUID.randomUUID))
+//  test("select asset by id") {
+//    check(selectAssetDataA(UUID.randomUUID))
+//  }
+   
+  test("insert assets-data-a") {
+    check(insertAssets(List.empty[AssetDataA]))
   }
-
+  
 }

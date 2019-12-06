@@ -20,7 +20,7 @@
     <appender-ref ref="STDOUT"/>
   </logger>
   
-  <logger name="doobie.util" level="DEBUG" additivity="false">
+  <logger name="doobie.util" level="INFO" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
   

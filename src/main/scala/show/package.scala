@@ -1,33 +1,12 @@
 import cats.data.NonEmptyList
 import cats.implicits._
 import cats.{Monoid, Show}
-import datatypes.MaybeAssetDataA
 
 package object show {
   
   /*
   show instances -------------------------------------------------------------------------------------------------------
    */
-  implicit def assetShow: Show[MaybeAssetDataA] = Show.show(x =>
-    s"""
-       |id:               ${x.id}
-       |refresh_id:       ${x.refresh_id}
-       |steam_id:         ${x.steam_id}
-       |appid:            ${x.appid}
-       |assetid:          ${x.assetid}
-       |classid:          ${x.classid}
-       |instanceid:       ${x.instanceid}
-       |tradable:         ${x.tradable}
-       |market_hash_name: ${x.market_hash_name}
-       |icon_url:         ${x.icon_url}
-       |asset_type:       ${x.asset_type}
-       |exterior:         ${x.exterior}
-       |rarity:           ${x.rarity}
-       |link_id:          ${x.link_id}
-       |sticker_info:     ${x.sticker_info}
-    """.stripMargin
-  )
-  
   implicit def nelStringShow: Show[NonEmptyList[String]] = Show.show[NonEmptyList[String]](
     _.foldLeft("\n")(_ + _ + "\n")
   )
