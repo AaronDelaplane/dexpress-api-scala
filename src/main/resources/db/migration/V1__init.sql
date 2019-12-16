@@ -1,13 +1,19 @@
+-- noinspection SqlNoDataSourceInspectionForFile
+
 create extension if not exists "uuid-ossp";
 
 set time zone 'UTC';
 
-create table assets_data_a(
+create table assets(
     -- service-defined properties
     dexpress_asset_id uuid     not null primary key, -- dexpress-defined property
     refresh_id        uuid     not null,             -- dexpress-defined property
+    trading           boolean  not null,
     -- user-defined properties
     steam_id          text     not null,             -- todo encrypt <- not a priority while developing locally
+    -- taken from `https://api.csgofloat.com/` response. call is only made when an asset.trading is updated to `true`
+    floatvalue        float, 
+    -- all properties below line taken from `https://steamcommunity.com/inventory/` response ---------------------------
     -- asset/description-defined properties 
     classid           text     not null,             -- name format matches json response
     instanceid        text     not null,             -- name format matches json response
@@ -57,23 +63,12 @@ create table assets_data_a(
     tag_quality_color                    text  -- maybe present
 );
 
-comment on table assets_data_a is 'required data for item to be listed in user''s inventory';
+comment on table assets is 'required data for item to be listed in user''s inventory';
 
-create table assets_data_b(
-    dexpress_asset_id uuid    not null primary key,
-    float             decimal not null
-);
-
-comment on table assets_data_b is 'required data for item to be marked as trading';
-
-create table assets_trading(
-    dexpress_asset_id uuid not null primary key
-);
-
-comment on table assets_trading is 'a set of ids representing all assets currently trading';
-
-create table events_refresh_assets_data_a(
+create table events_refresh_assets(
     id   uuid        not null primary key,
     time timestamptz not null                      
-)
+);
+
+comment on table events_refresh_assets is '';
     

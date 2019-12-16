@@ -106,6 +106,7 @@ object ToValidatedSteamDescriptions {
   private def toMaybeLinkId(s: String): Option[String] =
       s.split("%D").reverse.headOption 
     
+  // todo inspected two rows. all stickers were the same. verify this is correct
   private val uriRegex = new Regex("https.*?png")
   private def toMaybeStickerUrls(xs: List[SteamNestedDescription]): Option[NonEmptyList[Uri]] =
     xs.flatMap(_.value).foldLeft(List.empty[Uri])((acc, string) => 

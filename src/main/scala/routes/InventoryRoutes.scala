@@ -8,7 +8,7 @@ import clients.csfloat.CsFloatClient
 import clients.postgres.PostgresClient
 import clients.steam.SteamClient
 import codecs._
-import datamaps.toassetsdataa.ToAssetsDataA.toAssetsDataA
+import datamaps.toassetsdataa.ToAssets.toAssets
 import enums._
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.http4s.HttpRoutes
@@ -38,7 +38,7 @@ class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient, csFloa
             case InventoryAction.refresh => for {
                inventory   <- steamClient.getInventory(steamId, count.value)
                refreshId   <- randomUUID().pure[IO]
-               assetsDataA <- toAssetsDataA(refreshId, steamId, inventory)
+               assetsDataA <- toAssets(refreshId, steamId, inventory)
                _           <- pgClient.insertMany(assetsDataA)
                response    <- NoContent()
             } yield response
@@ -46,16 +46,18 @@ class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient, csFloa
         )
         .valueOr(errors => BadRequest(errors.show))
 
-//    case PUT -> Root / "asset" :? AssetIdQPM(assetIdValidated) +& TradingQPM(tradingValidated) =>
-//      (assetIdValidated, tradingValidated)
-//        .mapN((assetId, trading) => 
-//          for {
-//            assetDataA <- pgClient.selectAssetDataA(assetId)
-//            assetDataB <- csFloatClient.getAssetDataB(assetDataA.assetid)
-//            response <- Ok("")
-//          } yield response 
-//        )
-//        .valueOr(errors => BadRequest(errors.show))    
+    case PUT -> Root / "asset" :? AssetIdQPM(assetIdValidated) +& TradingQPM(tradingValidated) =>
+      (assetIdValidated, tradingValidated)
+        .mapN((assetId, trading) => 
+          for {
+            // todo determine if asset_data_b for assetid already exists. if trading true, it must not exist.  if trading false, it must exist
+            assetDataA <- pgClient.selectAsset(assetId)
+            floatValue <- csFloatClient.getFloatValue(assetDataA.assetid)
+//            _          <- pgClient.insert(AssetDataB(assetDataA.dexpress_asset_id, floatValue))
+            response   <- NoContent()
+          } yield response 
+        )
+        .valueOr(errors => BadRequest(errors.show))    
                             
                             
     // set state of asset to `trading` || `nottrading`. return error if state already === 

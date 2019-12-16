@@ -1,5 +1,7 @@
 package clients.postgres
 
+import java.util.UUID
+
 import cats.effect.IO
 import datatypes._
 import doobie.implicits._
@@ -18,11 +20,14 @@ class PostgresClient(xa: Transactor[IO]) extends Http4sDsl[IO] {
       case Right(_)        => NoContent()
     }
   
-  def insertMany(xs: NEL[AssetDataA]): IO[Int] =
-    Statements.insertAssets(xs.toList).updateMany(xs).transact(xa)
+  def insertMany(xs: NEL[Asset]): IO[Int] =
+    Statements.insertAssets(xs.toList).updateMany(xs).transact(xa) // todo remove argument to insertAssets
     
-//  def selectAssetDataA(assetId: UUID): IO[AssetDataA] =
-//    Statements.selectAssetDataA(assetId).unique.transact(xa) 
+  def selectAsset(assetId: UUID): IO[Asset] =
+    Statements.selectAsset(assetId).unique.transact(xa) 
+  
+//  def insert(x: AssetDataB): IO[Int] =
+//    Statements.insertAssetDataB.run(x).transact(xa)
   
 //  def updateAssetTradingState(uuid: UUID, b: Boolean): IO[Int] =
 //    Statements.updateAssetTradingState(uuid, b).run.transact(xa)

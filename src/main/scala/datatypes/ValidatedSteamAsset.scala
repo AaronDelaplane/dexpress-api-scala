@@ -1,7 +1,6 @@
 package datatypes
 
 case class ValidatedSteamAsset(
-  //dexpress_id: UUID,
   classid:     String,
   instanceid:  String,
   appid:       Int,

@@ -4,11 +4,12 @@ import java.util.UUID
 
 import org.http4s.Uri
 
-final case class AssetDataA(
+final case class Asset(
   dexpress_asset_id: UUID,
   refresh_id:        UUID,
+  trading:           Boolean,
   steam_id:          String,
-  
+  floatvalue:        Option[Double],
   classid:           String,
   instanceid:        String,
   appid:             Int,
@@ -16,7 +17,7 @@ final case class AssetDataA(
   amount:            String,  
   market_hash_name:  String,
   icon_url:          String,
-  tradable:          Int,
+  tradable:          Int,               // todo possibly remove. if 0, no write to datastore should occur
   `type`:            String,            // `type` in steam response
   link_id:           Option[String],
   sticker_urls:      Option[List[Uri]], // todo make nonemptylist
@@ -49,15 +50,17 @@ final case class AssetDataA(
   tag_quality_color:                    Option[String],
 )
 
-object AssetDataA {
+object Asset {
 
-  def apply(steamId: String, refreshId: UUID)(t: (VSD, VSA)): AssetDataA = {
+  def apply(steamId: String, refreshId: UUID)(t: (VSD, VSA)): Asset = {
     val d = t._1
     val a = t._2
-    AssetDataA(
+    Asset(
       dexpress_asset_id = UUID.randomUUID,
       refresh_id        = refreshId,
+      trading           = false,
       steam_id          = steamId,
+      floatvalue        = None,
       classid           = d.classid,
       instanceid        = d.instanceid,
       appid             = d.appid,

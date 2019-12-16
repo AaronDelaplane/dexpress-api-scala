@@ -4,9 +4,9 @@ import cats.data.NonEmptyList
 import cats.implicits._
 import datatypes._
 
-object ToAssetsAndDescriptions {
+object ToSteamAssetsAndDescriptions {
 
-  def toAssetsAndDescriptionsNel(si: SI): ErrorOr[(NEL[SA], NEL[SD])] = {
+  def toSAsAndSDsNel(si: SI): ErrorOr[(NEL[SA], NEL[SD])] = {
       type R = (NEL[SA], NEL[SD])
       (si.assets, si.descriptions) match {
         case (None, None) => "missing-assets-&-descriptions".asLeft[R]

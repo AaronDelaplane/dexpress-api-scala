@@ -1,7 +1,10 @@
 package clients.postgres
 
-import datatypes.AssetDataA
+import java.util.UUID
+
+import datatypes._
 import doobie._
+import doobie.implicits._
 import doobie.postgres.implicits._
 import org.http4s.Uri
 
@@ -14,12 +17,14 @@ object Statements {
   implicit val uriListString: Meta[List[Uri]] = 
     Meta[Array[String]].timap[List[Uri]](_.toList.map(Uri.unsafeFromString))(_.map(_.renderString).toArray)
   
-  def insertAssets(as: List[AssetDataA]): Update[AssetDataA] =
-    Update[AssetDataA]("""
-      insert into assets_data_a (
+  def insertAssets(as: List[Asset]): Update[Asset] =
+    Update[Asset]("""
+      insert into assets (
           dexpress_asset_id,
           refresh_id,
+          trading,
           steam_id,
+          floatvalue,
           classid,
           instanceid,
           appid,
@@ -53,11 +58,16 @@ object Statements {
           tag_quality_localized_category_name,
           tag_quality_localized_tag_name,
           tag_quality_color
-      ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+      ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     """)
     
-//    def selectAssetDataA(assedId: UUID): Query0[AssetDataA] =
-//      sql"select * from assets_data_a where id = $assedId".query[AssetDataA]
+    def selectAsset(assedId: UUID): Query0[Asset] =
+      sql"select * from assets where id = $assedId".query[Asset]
+  
+//    def insertAssetDataB: Update[AssetDataB] =
+//      Update[AssetDataB]("""
+//        insert into assets_data_b (dexpress_asset_id, float_value) values (?,?)
+//      """)
     
 //    def updateAssetTradingState(assetId: UUID, tradingState: Boolean): Update0 =
 //      sql"update assets set trading = $tradingState where id = $assetId".update  
