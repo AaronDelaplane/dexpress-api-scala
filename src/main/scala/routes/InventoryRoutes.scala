@@ -2,7 +2,7 @@ package routes
 
 import java.util.UUID.randomUUID
 
-import cats.effect.IO
+import cats.effect._
 import cats.implicits._
 import clients.csfloat.CsFloatClient
 import clients.postgres.PostgresClient
@@ -15,6 +15,7 @@ import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import show._
 
+import scala.concurrent.duration.MILLISECONDS
 /*
 finish parsing of steam inventory to asset
 should instance_id ever be `0`? yes 
@@ -24,7 +25,7 @@ todo refresh existing inventory
 todo add refresh time limit   
  */
 
-class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient, csFloatClient: CsFloatClient) extends Http4sDsl[IO] {
+class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient, csFloatClient: CsFloatClient)(implicit C: Clock[IO]) extends Http4sDsl[IO] {
 
   implicit def logger = Slf4jLogger.getLogger[IO]
   
@@ -36,10 +37,11 @@ class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient, csFloa
         .mapN((action, count) =>
           action match {
             case InventoryAction.refresh => for {
+               time        <- C.monotonic(MILLISECONDS)
                inventory   <- steamClient.getInventory(steamId, count.value)
                refreshId   <- randomUUID().pure[IO]
                assetsDataA <- toAssets(refreshId, steamId, inventory)
-               _           <- pgClient.insertMany(assetsDataA)
+               _           <- pgClient.insertMany(assetsDataA, refreshId, time)
                response    <- NoContent()
             } yield response
           }  

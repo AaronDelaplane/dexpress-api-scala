@@ -60,9 +60,12 @@ object Statements {
           tag_quality_color
       ) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     """)
+  
+  def insertEventRefreshAssets(refreshId: UUID, time: Long): Update0 =
+    sql"insert into events_refresh_assets(refresh_id, time) values ($refreshId, $time)".update
     
-    def selectAsset(assedId: UUID): Query0[Asset] =
-      sql"select * from assets where id = $assedId".query[Asset]
+  def selectAsset(assedId: UUID): Query0[Asset] =
+    sql"select * from assets where id = $assedId".query[Asset]
   
 //    def insertAssetDataB: Update[AssetDataB] =
 //      Update[AssetDataB]("""

@@ -66,8 +66,8 @@ create table assets(
 comment on table assets is 'required data for item to be listed in user''s inventory';
 
 create table events_refresh_assets(
-    id   uuid        not null primary key,
-    time timestamptz not null                      
+    refresh_id uuid not null primary key,
+    time       int  not null                      
 );
 
 comment on table events_refresh_assets is '';

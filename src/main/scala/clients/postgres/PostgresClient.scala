@@ -20,8 +20,12 @@ class PostgresClient(xa: Transactor[IO]) extends Http4sDsl[IO] {
       case Right(_)        => NoContent()
     }
   
-  def insertMany(xs: NEL[Asset]): IO[Int] =
-    Statements.insertAssets.updateMany(xs).transact(xa) // todo remove argument to insertAssets
+  def insertMany(xs: NEL[Asset], refreshId: UUID, time: Long): IO[Unit] = (
+    for {
+      _ <- Statements.insertAssets.updateMany(xs)
+      _ <- Statements.insertEventRefreshAssets(refreshId, time).run
+    } yield ()
+  ).transact(xa)
     
   def selectAsset(assetId: UUID): IO[Asset] =
     Statements.selectAsset(assetId).unique.transact(xa) 

@@ -1,6 +1,5 @@
 import cats.effect.IO
 import clients.postgres.Statements._
-import datatypes.Asset
 import doobie._
 import org.scalatest._
 class StatementsSpec extends FunSuite with Matchers with doobie.scalatest.IOChecker {
@@ -20,7 +19,7 @@ class StatementsSpec extends FunSuite with Matchers with doobie.scalatest.IOChec
 //  }
    
   test("insert assets") {
-    check(insertAssets(List.empty[Asset]))
+    check(insertAssets)
   }
   
 }
