@@ -17,7 +17,7 @@ object Statements {
   implicit val uriListString: Meta[List[Uri]] = 
     Meta[Array[String]].timap[List[Uri]](_.toList.map(Uri.unsafeFromString))(_.map(_.renderString).toArray)
   
-  def insertAssets(as: List[Asset]): Update[Asset] =
+  def insertAssets: Update[Asset] =
     Update[Asset]("""
       insert into assets (
           dexpress_asset_id,
