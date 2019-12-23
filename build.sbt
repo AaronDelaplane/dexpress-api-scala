@@ -113,6 +113,7 @@ lazy val root = (project in file("."))
         |import datatypes._
         |import enums._
         |import show._
+        |import clients.postgres.Statements._
         |
         |import java.util.UUID
         |
