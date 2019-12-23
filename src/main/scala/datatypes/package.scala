@@ -15,14 +15,14 @@ package object datatypes {
   type SI  = SteamInventory
   
   type SA  = SteamAsset
-  type VSA = ValidatedSteamAsset
+  type SAV = SteamAssetValidated
   
   type SD  = SteamDescription
-  type VSD = ValidatedSteamDescription
+  type SDV = SteamDescriptionValidated
   
   type ST                = SteamTag
-  type VSTWithoutColor   = ValidatedSteamTagWithoutColor
-  type VSTWithMaybeColor = ValidatedSteamTagWithMaybeColor
-  type VSTWithColor      = ValidatedSteamTagWithColor
+  type STVWithoutColor   = SteamTagValidatedWithoutColor
+  type STVWithMaybeColor = SteamTagValidatedWithMaybeColor
+  type STVWithColor      = SteamTagValidatedWithColor
 
 }

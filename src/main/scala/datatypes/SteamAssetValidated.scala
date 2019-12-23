@@ -1,6 +1,6 @@
 package datatypes
 
-case class ValidatedSteamAsset(
+case class SteamAssetValidated(
   classid:     String,
   instanceid:  String,
   appid:       Int,

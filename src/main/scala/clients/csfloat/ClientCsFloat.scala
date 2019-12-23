@@ -11,11 +11,11 @@ import org.http4s.dsl.Http4sDsl
 
 import scala.concurrent.ExecutionContext.global
 
-class CsFloatClient(config: CsFloatConfig, httpClient: Client[IO]) extends Http4sDsl[IO] {
+class ClientCsFloat(config: ConfigCsFloat, clientHttp: Client[IO]) extends Http4sDsl[IO] {
 
   def getFloatValue(assetId: String): IO[Double] =
     for {
-    json       <- httpClient.expect[io.circe.Json](config.uri.+?("s", "").+?("d", "").+?("a", assetId))
+    json       <- clientHttp.expect[io.circe.Json](config.uri.+?("s", "").+?("d", "").+?("a", assetId))
     floatvalue <- root.iteminfo.floatvalue.double.getOption(json).fold[IO[Double]](
                     IO.raiseError(new Exception("missing-floatvalue-in-csfloat-response"))
                   )(
@@ -25,7 +25,7 @@ class CsFloatClient(config: CsFloatConfig, httpClient: Client[IO]) extends Http4
   
 }
 
-object CsFloatClient {
-  def resource(config: CsFloatConfig)(implicit CE: ConcurrentEffect[IO]): Resource[IO, CsFloatClient] =
-    BlazeClientBuilder[IO](global).resource.map(new CsFloatClient(config, _))
+object ClientCsFloat {
+  def resource(config: ConfigCsFloat)(implicit CE: ConcurrentEffect[IO]): Resource[IO, ClientCsFloat] =
+    BlazeClientBuilder[IO](global).resource.map(new ClientCsFloat(config, _))
 }

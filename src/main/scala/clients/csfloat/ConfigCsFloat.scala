@@ -5,14 +5,14 @@ import codecs.uriDecoder
 import org.http4s.Uri
 import org.http4s.implicits._
 
-final case class CsFloatConfig(
+final case class ConfigCsFloat(
   uri: Uri
 )
 
-object CsFloatConfig {
+object ConfigCsFloat {
   val DEFAULT_CS_FLOAT_URI = uri"https://api.csgofloat.com"
   
-  val configValue: ConfigValue[CsFloatConfig] =
+  val configValue: ConfigValue[ConfigCsFloat] =
     env("CS_FLOAT_URI").as[Uri].default(DEFAULT_CS_FLOAT_URI)
-      .map(CsFloatConfig.apply)
+      .map(ConfigCsFloat.apply)
 }

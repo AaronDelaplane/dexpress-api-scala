@@ -6,26 +6,26 @@ import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
 import org.http4s.syntax.kleisli._
-import routes.{HealthRoutes, InventoryRoutes}
+import routes.{RoutesHealth, RoutesInventory}
 
 object Main extends IOApp with Http4sDsl[IO] {
   
   override def run(args: List[String]): IO[ExitCode] =
-    ServiceResources.make.use(resources =>
-      resources.flywayClient.migrate *>
+    ResourcesService.make.use(resources =>
+      resources.clientFlyway.migrate *>
       BlazeServerBuilder[IO]
         .bindHttp(
-          resources.serviceConfig.httpPort.value,
-          resources.serviceConfig.httpHost.renderString
+          resources.configService.httpPort.value,
+          resources.configService.httpHost.renderString
         )
         .withHttpApp {
           
-          val healthRoutes    = new HealthRoutes
-          val inventoryRoutes = new InventoryRoutes(resources.pgClient, resources.steamClient, resources.csgoFloatClient)
+          val routesHealth    = new RoutesHealth
+          val routesInventory = new RoutesInventory(resources.clientPg, resources.clientSteam, resources.clientCsgoFloat)
           
           val routes: HttpRoutes[IO] = Router[IO](
             "/" -> {
-              healthRoutes.routes <+> inventoryRoutes.routes 
+              routesHealth.routes <+> routesInventory.routes 
             }
           )
           

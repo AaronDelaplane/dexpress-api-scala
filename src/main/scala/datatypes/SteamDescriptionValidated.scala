@@ -2,7 +2,7 @@ package datatypes
 
 import org.http4s.Uri
 
-final case class ValidatedSteamDescription(
+final case class SteamDescriptionValidated(
   classid:          String,
   instanceid:       String,
   appid:            Int,
@@ -12,9 +12,9 @@ final case class ValidatedSteamDescription(
   `type`:           String,
   link_id:          Option[String],
   sticker_urls:     Option[List[Uri]],
-  tagExterior:      Option[VSTWithoutColor],
-  tagRarity:        Option[VSTWithColor],
-  tagType:          Option[VSTWithoutColor],
-  tagWeapon:        Option[VSTWithoutColor],
-  tagQuality:       Option[VSTWithMaybeColor]
+  tagExterior:      Option[STVWithoutColor],
+  tagRarity:        Option[STVWithColor],
+  tagType:          Option[STVWithoutColor],
+  tagWeapon:        Option[STVWithoutColor],
+  tagQuality:       Option[STVWithMaybeColor]
 ) 

@@ -10,7 +10,7 @@ import doobie.util.transactor.Transactor
 import org.http4s.Response
 import org.http4s.dsl.Http4sDsl
 
-class PostgresClient(xa: Transactor[IO]) extends Http4sDsl[IO] {
+class ClientPostgres(xa: Transactor[IO]) extends Http4sDsl[IO] {
 
   implicit val han: LogHandler = LogHandler.jdkLogHandler  
   

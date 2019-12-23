@@ -11,7 +11,7 @@ import org.http4s.{Request, Uri}
 
 import scala.concurrent.ExecutionContext.global
 
-class SteamClient(config: SteamClientConfig, httpClient: Client[IO]) extends Http4sDsl[IO] {
+class ClientSteam(config: ConfigSteamClient, httpClient: Client[IO]) extends Http4sDsl[IO] {
   
   private val logger = Slf4jLogger.getLogger[IO]
   
@@ -34,7 +34,7 @@ class SteamClient(config: SteamClientConfig, httpClient: Client[IO]) extends Htt
   
 }
 
-object SteamClient {
-  def resource(config: SteamClientConfig)(implicit CE: ConcurrentEffect[IO]): Resource[IO, SteamClient] =
-    BlazeClientBuilder[IO](global).resource.map(new SteamClient(config, _))
+object ClientSteam {
+  def resource(config: ConfigSteamClient)(implicit CE: ConcurrentEffect[IO]): Resource[IO, ClientSteam] =
+    BlazeClientBuilder[IO](global).resource.map(new ClientSteam(config, _))
 }

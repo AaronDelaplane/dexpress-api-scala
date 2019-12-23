@@ -52,7 +52,7 @@ final case class Asset(
 
 object Asset {
 
-  def apply(steamId: String, refreshId: UUID)(t: (VSD, VSA)): Asset = {
+  def apply(steamId: String, refreshId: UUID)(t: (SDV, SAV)): Asset = {
     val d = t._1
     val a = t._2
     Asset(

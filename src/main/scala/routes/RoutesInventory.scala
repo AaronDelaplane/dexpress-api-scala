@@ -4,9 +4,9 @@ import java.util.UUID.randomUUID
 
 import cats.effect._
 import cats.implicits._
-import clients.csfloat.CsFloatClient
-import clients.postgres.PostgresClient
-import clients.steam.SteamClient
+import clients.csfloat.ClientCsFloat
+import clients.postgres.ClientPostgres
+import clients.steam.ClientSteam
 import codecs._
 import datamaps.toassetsdataa.ToAssets.toAssets
 import enums._
@@ -25,7 +25,7 @@ todo refresh existing inventory
 todo add refresh time limit   
  */
 
-class InventoryRoutes(pgClient: PostgresClient, steamClient: SteamClient, csFloatClient: CsFloatClient)(implicit C: Clock[IO]) extends Http4sDsl[IO] {
+class RoutesInventory(pgClient: ClientPostgres, steamClient: ClientSteam, csFloatClient: ClientCsFloat)(implicit C: Clock[IO]) extends Http4sDsl[IO] {
 
   implicit def logger = Slf4jLogger.getLogger[IO]
   

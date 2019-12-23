@@ -11,19 +11,19 @@ import org.http4s.Uri
 
 import scala.util.matching.Regex
 
-object ToValidatedSteamDescriptions {
+object ToSteamDescriptionsValidated {
 
   private val logger = Slf4jLogger.getLogger[IO]
   
-  def toValidatedSDsNel(xs: NEL[SD]): IO[NEL[VSD]] = {
-    val (errors, vSDs) = xs.toList.partitionMap(toValidatedSD)
+  def toSDsValidatedNel(xs: NEL[SD]): IO[NEL[SDV]] = {
+    val (errors, vSDs) = xs.toList.partitionMap(toSDValidated)
     for {
       _   <- log(errors, vSDs)
       nel <- validate(errors, vSDs).fold(s => IO.raiseError(new Exception(s)), IO.pure)
     } yield nel
   }
   
-  private def toValidatedSD(x: SD): ErrorOr[VSD] =
+  private def toSDValidated(x: SD): ErrorOr[SDV] =
     for {
       _log_id          <- s"classid=${x.classid}_instanceid=${x.instanceid}".asRight
       
@@ -41,32 +41,32 @@ object ToValidatedSteamDescriptions {
       _tags            <- x.tags.fold(s"tags-not-defined--${_log_id}".asLeft[List[SteamTag]])(_.asRight)
       _neTags          <- _tags.toNel.fold(s"tags-empty--${_log_id}".asLeft[NEL[SteamTag]])(_.asRight)
       tagExterior      <- findTag(_neTags, Exterior).map(toVSTWithoutColor)
-                            .fold(Option.empty[VSTWithoutColor].asRight[String])({
-                              case Left(error) => error.asLeft[Option[VSTWithoutColor]]
+                            .fold(Option.empty[STVWithoutColor].asRight[String])({
+                              case Left(error) => error.asLeft[Option[STVWithoutColor]]
                               case Right(vst)  => vst.some.asRight[String]
                             })
       tagRarity        <- findTag(_neTags, Rarity).map(toVSTWithColor)
-                            .fold(Option.empty[VSTWithColor].asRight[String])({
-                              case Left(error) => error.asLeft[Option[VSTWithColor]]
+                            .fold(Option.empty[STVWithColor].asRight[String])({
+                              case Left(error) => error.asLeft[Option[STVWithColor]]
                               case Right(vst)  => vst.some.asRight[String]
                             })   
       tagType          <- findTag(_neTags, Typ).map(toVSTWithoutColor)
-                            .fold(Option.empty[VSTWithoutColor].asRight[String])({
-                              case Left(error) => error.asLeft[Option[VSTWithoutColor]]
+                            .fold(Option.empty[STVWithoutColor].asRight[String])({
+                              case Left(error) => error.asLeft[Option[STVWithoutColor]]
                               case Right(vst)  => vst.some.asRight[String]
                             })                                         
       tagWeapon        <- findTag(_neTags, Weapon).map(toVSTWithoutColor)
-                           .fold(Option.empty[VSTWithoutColor].asRight[String])({
-                             case Left(error) => error.asLeft[Option[VSTWithoutColor]]
+                           .fold(Option.empty[STVWithoutColor].asRight[String])({
+                             case Left(error) => error.asLeft[Option[STVWithoutColor]]
                              case Right(vst)  => vst.some.asRight[String]
                            })                                        
       tagQuality       <- findTag(_neTags, Quality).map(toVSTWithMaybeColor)
-                            .fold(Option.empty[VSTWithMaybeColor].asRight[String])({
-                              case Left(error) => error.asLeft[Option[VSTWithMaybeColor]]
+                            .fold(Option.empty[STVWithMaybeColor].asRight[String])({
+                              case Left(error) => error.asLeft[Option[STVWithMaybeColor]]
                               case Right(vst)  => vst.some.asRight[String]
                             })                                                                              
     } yield
-      ValidatedSteamDescription(
+      SteamDescriptionValidated(
         classid          = classid,
         instanceid       = instanceid,
         appid            = appid,
@@ -83,7 +83,7 @@ object ToValidatedSteamDescriptions {
         tagQuality       = tagQuality,
       )
   
-  private def log(errors: List[String], xs: List[VSD]): IO[Unit] =
+  private def log(errors: List[String], xs: List[SDV]): IO[Unit] =
     logger.info(s"""
       |to-validated-steam-descriptions-nel-summary
       |  validated-steam-descriptions-count: ${xs.size}
@@ -96,10 +96,10 @@ object ToValidatedSteamDescriptions {
       |  with-tag-quality-count:             ${xs.filter(_.tagQuality.isDefined).size}
     """.stripMargin)
      
-  private def validate(errors: List[String], xs: List[VSD]): ErrorOr[NEL[VSD]] =
+  private def validate(errors: List[String], xs: List[SDV]): ErrorOr[NEL[SDV]] =
     (errors.toNel, xs.toNel) match {
-      case (Some(_), _)      => "attempt-to-trasform-steam-descriptions-to-validated-steam-descriptions-failed".asLeft[NEL[VSD]]
-      case (None, None)      => "attempt-to-transfrom-steam-descriptions-to-validated-steam-descriptions-returned-zero-results".asLeft[NEL[VSD]]
+      case (Some(_), _)      => "attempt-to-trasform-steam-descriptions-to-validated-steam-descriptions-failed".asLeft[NEL[SDV]]
+      case (None, None)      => "attempt-to-transfrom-steam-descriptions-to-validated-steam-descriptions-returned-zero-results".asLeft[NEL[SDV]]
       case (None, Some(nel)) => nel.asRight[String]
     }
 
@@ -125,13 +125,13 @@ object ToValidatedSteamDescriptions {
   private def findTag(nel: NEL[ST], c: SteamTagCategory): Option[ST] =
     nel.find(_.category.map(_.toLowerCase === c.category).getOrElse(false))
 
-  private def toVSTWithoutColor(x: ST): ErrorOr[VSTWithoutColor] = {
+  private def toVSTWithoutColor(x: ST): ErrorOr[STVWithoutColor] = {
     for {
       category                <- toTCategory(x)                  
       internal_name           <- toTInternalName(x)               
       localized_category_name <- toTLocalizedCategoryName(x)    
       localized_tag_name      <- toTLocalizedTagName(x)
-    } yield ValidatedSteamTagWithoutColor(
+    } yield SteamTagValidatedWithoutColor(
       category                = category,
       internal_name           = internal_name,
       localized_category_name = localized_category_name,
@@ -139,13 +139,13 @@ object ToValidatedSteamDescriptions {
     )
   }
   
-  private def toVSTWithMaybeColor(x: ST): ErrorOr[VSTWithMaybeColor] = {
+  private def toVSTWithMaybeColor(x: ST): ErrorOr[STVWithMaybeColor] = {
     for {
       category                <- toTCategory(x)                  
       internal_name           <- toTInternalName(x)               
       localized_category_name <- toTLocalizedCategoryName(x)    
       localized_tag_name      <- toTLocalizedTagName(x)
-    } yield ValidatedSteamTagWithMaybeColor(
+    } yield SteamTagValidatedWithMaybeColor(
       category                = category,
       internal_name           = internal_name,
       localized_category_name = localized_category_name,
@@ -154,14 +154,14 @@ object ToValidatedSteamDescriptions {
     )
   }
     
-  private def toVSTWithColor(x: ST): ErrorOr[VSTWithColor] = {
+  private def toVSTWithColor(x: ST): ErrorOr[STVWithColor] = {
     for {
       category                <- toTCategory(x)                  
       internal_name           <- toTInternalName(x)               
       localized_category_name <- toTLocalizedCategoryName(x)    
       localized_tag_name      <- toTLocalizedTagName(x)
       color                   <- x.localized_tag_name.fold("tag-color-not-defined".asLeft[String])(_.asRight[String])  
-    } yield ValidatedSteamTagWithColor(
+    } yield SteamTagValidatedWithColor(
       category                = category,
       internal_name           = internal_name,
       localized_category_name = localized_category_name,
