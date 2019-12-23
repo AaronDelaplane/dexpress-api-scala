@@ -39,6 +39,7 @@ lazy val root = (project in file("."))
       "co.fs2"            %% "fs2-core"            % fs2Version,
       "co.fs2"            %% "fs2-io"              % fs2Version,
       "com.beachape"      %% "enumeratum"          % "1.5.13",
+      "com.lihaoyi"        % "ammonite"            % "1.9.3"         % "test" cross CrossVersion.full,
       "io.chrisdavenport" %% "log4cats-slf4j"      % "1.0.1",
       "io.circe"          %% "circe-core"          % circeVersion,
       "io.circe"          %% "circe-generic"       % circeVersion,
@@ -125,6 +126,6 @@ lazy val root = (project in file("."))
         |)
         |
         |val flyway: Flyway = Flyway.configure().dataSource("jdbc:postgresql://0.0.0.0:5432/inventory", "postgres", "password").load()
-        |val flywayClient = new FlywayClient(flyway)
+        |val clientFlyway = new ClientFlyway(flyway)
   """.stripMargin
   )
