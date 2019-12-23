@@ -1,12 +1,12 @@
-package datamaps.toassetsdataa
+package datamaps.toassets
 import java.util.UUID
 
 import cats.data._
 import cats.effect._
-import datamaps.toassetsdataa.helpers.ToSteamAssetsAndDescriptions.toSAsAndSDsNel
-import datamaps.toassetsdataa.helpers.ToTradablePairs.toTradablePairsNel
-import datamaps.toassetsdataa.helpers.ToSteamAssetsValidated.toSAsValidatedNel
-import datamaps.toassetsdataa.helpers.ToSteamDescriptionsValidated.toSDsValidatedNel
+import datamaps.toassets.helpers.ToSteamAssetsAndDescriptions.toSAsAndSDsNel
+import datamaps.toassets.helpers.ToTradablePairs.toTradablePairsNel
+import datamaps.toassets.helpers.ToSteamAssetsValidated.toSAsValidatedNel
+import datamaps.toassets.helpers.ToSteamDescriptionsValidated.toSDsValidatedNel
 import datatypes._
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 

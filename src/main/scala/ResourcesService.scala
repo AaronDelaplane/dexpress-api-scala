@@ -22,7 +22,7 @@ object ResourcesService {
   def make(implicit CE: ConcurrentEffect[IO], CS: ContextShift[IO]): Resource[IO, ResourcesService] =
     for {
       configService     <- Resource.liftF(ConfigService.configValue.load)
-      clientCsgoFloat   <- Resource.liftF(ConfigCsFloat.configValue.load).flatMap(ClientCsFloat.resource)
+      clientCsFloat     <- Resource.liftF(ConfigCsFloat.configValue.load).flatMap(ClientCsFloat.resource)
       configPg          <- Resource.liftF(ConfigPostgres.configValue.load)
       transactorPg       = Transactor.fromDriverManager(
                              "org.postgresql.Driver",
@@ -42,7 +42,7 @@ object ResourcesService {
     } yield 
       ResourcesService(
         configService,
-        clientCsgoFloat,
+        clientCsFloat,
         new ClientFlyway(flyway),
         new ClientPostgres(transactorPg),
         clientSteam

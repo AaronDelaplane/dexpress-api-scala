@@ -8,7 +8,8 @@ import clients.csfloat.ClientCsFloat
 import clients.postgres.ClientPostgres
 import clients.steam.ClientSteam
 import codecs._
-import datamaps.toassetsdataa.ToAssets.toAssets
+import compositions.InventoryRefresh.refreshInventory
+import datamaps.toassets.ToAssets.toAssets
 import enums._
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.http4s.HttpRoutes
@@ -25,26 +26,17 @@ todo refresh existing inventory
 todo add refresh time limit   
  */
 
-class RoutesInventory(pgClient: ClientPostgres, steamClient: ClientSteam, csFloatClient: ClientCsFloat)(implicit C: Clock[IO]) extends Http4sDsl[IO] {
+class RoutesInventory(clientPg: ClientPostgres, clientSteam: ClientSteam, clientCsFloat: ClientCsFloat)(implicit C: Clock[IO]) extends Http4sDsl[IO] {
 
   implicit def logger = Slf4jLogger.getLogger[IO]
   
   def routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
-    
-    // source remote inventory, validate, and write to postgres
     case GET -> Root / "inventory" / steamId :? InventoryActionQPM(actionValidated) +& CountQPM(countValidated) =>
       (actionValidated, countValidated)
         .mapN((action, count) =>
           action match {
-            case InventoryAction.refresh => for {
-               time        <- C.monotonic(MILLISECONDS)
-               inventory   <- steamClient.getInventory(steamId, count.value)
-               refreshId   <- randomUUID().pure[IO]
-               assetsDataA <- toAssets(refreshId, steamId, inventory)
-               _           <- pgClient.insertMany(assetsDataA, refreshId, time)
-               response    <- NoContent()
-            } yield response
-          }  
+            case ActionInventory.refresh => refreshInventory(clientSteam, clientPg, steamId, count)
+          }
         )
         .valueOr(errors => BadRequest(errors.show))
 
@@ -53,8 +45,8 @@ class RoutesInventory(pgClient: ClientPostgres, steamClient: ClientSteam, csFloa
         .mapN((assetId, trading) => 
           for {
             // todo determine if asset_data_b for assetid already exists. if trading true, it must not exist.  if trading false, it must exist
-            assetDataA <- pgClient.selectAsset(assetId)
-            floatValue <- csFloatClient.getFloatValue(assetDataA.assetid)
+            assetDataA <- clientPg.selectAsset(assetId)
+            floatValue <- clientCsFloat.getFloatValue(assetDataA.assetid)
 //            _          <- pgClient.insert(AssetDataB(assetDataA.dexpress_asset_id, floatValue))
             response   <- NoContent()
           } yield response 

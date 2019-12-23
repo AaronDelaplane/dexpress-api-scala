@@ -1,4 +1,4 @@
-package datamaps.toassetsdataa.helpers
+package datamaps.toassets.helpers
 
 import cats.data.NonEmptyList
 import cats.effect.IO

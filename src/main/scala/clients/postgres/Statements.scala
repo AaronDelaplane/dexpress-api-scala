@@ -67,6 +67,9 @@ object Statements {
   def selectAsset(assedId: UUID): Query0[Asset] =
     sql"select * from assets where id = $assedId".query[Asset]
   
+  def selectAssets(refreshId: String): Query0[Asset] =
+    sql"select * from assets where refresh_id = $refreshId".query[Asset]
+  
 //    def insertAssetDataB: Update[AssetDataB] =
 //      Update[AssetDataB]("""
 //        insert into assets_data_b (dexpress_asset_id, float_value) values (?,?)

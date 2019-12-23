@@ -85,9 +85,9 @@ package object codecs {
       case true  => Count(n).asRight[ParseFailure]
       case false => ParseFailure(s"count must be ${r.start} to ${r.end}", Monoid[String].empty).asLeft[Count]})
 
-  implicit def inventoryActionQPD: QueryParamDecoder[InventoryAction] =
-    QueryParamDecoder[String].emap[InventoryAction](InventoryAction.withNameLowercaseOnlyOption(_).fold(
-      ParseFailure(s"action must be one of: ${InventoryAction.values}", Monoid[String].empty).asLeft[InventoryAction]
+  implicit def inventoryActionQPD: QueryParamDecoder[ActionInventory] =
+    QueryParamDecoder[String].emap[ActionInventory](ActionInventory.withNameLowercaseOnlyOption(_).fold(
+      ParseFailure(s"action must be one of: ${ActionInventory.values}", Monoid[String].empty).asLeft[ActionInventory]
     )(_.asRight[ParseFailure]))
   
   implicit def uuidQPD: QueryParamDecoder[UUID] =
@@ -102,7 +102,7 @@ package object codecs {
   
   object CountQPM extends ValidatingQueryParamDecoderMatcher[Count]("count")
   
-  object InventoryActionQPM extends ValidatingQueryParamDecoderMatcher[InventoryAction]("action")
+  object InventoryActionQPM extends ValidatingQueryParamDecoderMatcher[ActionInventory]("action")
 
   object TradingQPM extends ValidatingQueryParamDecoderMatcher[Boolean]("trading")
 

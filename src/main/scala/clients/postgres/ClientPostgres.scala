@@ -30,6 +30,9 @@ class ClientPostgres(xa: Transactor[IO]) extends Http4sDsl[IO] {
   def selectAsset(assetId: UUID): IO[Asset] =
     Statements.selectAsset(assetId).unique.transact(xa) 
   
+  def selectAssets(refreshId: String) =
+    Statements.selectAssets(refreshId).to[List].transact(xa)
+  
 //  def insert(x: AssetDataB): IO[Int] =
 //    Statements.insertAssetDataB.run(x).transact(xa)
   
