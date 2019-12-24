@@ -3,13 +3,9 @@ import ciris._
 import codecs._
 import eu.timepit.refined.types.net.UserPortNumber
 import org.http4s.Uri
+import datatypes.ConfigService
 
-final case class ConfigService(
-    httpHost: Uri,
-    httpPort: UserPortNumber
-)
-
-object ConfigService {
+object _ConfigService {
   val DEFAULT_HTTP_HOST: Uri = Uri.unsafeFromString("0.0.0.0")
   val DEFAULT_HTTP_PORT: UserPortNumber = UserPortNumber.unsafeFrom(10000)
 
@@ -17,5 +13,5 @@ object ConfigService {
     (
       env("HTTP_HOST").as[Uri].default(DEFAULT_HTTP_HOST),
       env("HTTP_PORT").as[UserPortNumber].default(DEFAULT_HTTP_PORT)
-    ).parMapN(ConfigService.apply)
+    ).parMapN(ConfigService)
 }

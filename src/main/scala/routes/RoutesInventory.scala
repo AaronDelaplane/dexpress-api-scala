@@ -1,22 +1,14 @@
 package routes
 
-import java.util.UUID.randomUUID
-
 import cats.effect._
 import cats.implicits._
-import clients.csfloat.ClientCsFloat
-import clients.postgres.ClientPostgres
-import clients.steam.ClientSteam
 import codecs._
-import compositions.InventoryRefresh.refreshInventory
-import datamaps.toassets.ToAssets.toAssets
+import datatypes.ResourcesService
 import enums._
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import show._
-
-import scala.concurrent.duration.MILLISECONDS
 /*
 finish parsing of steam inventory to asset
 should instance_id ever be `0`? yes 
@@ -26,8 +18,10 @@ todo refresh existing inventory
 todo add refresh time limit   
  */
 
-class RoutesInventory(clientPg: ClientPostgres, clientSteam: ClientSteam, clientCsFloat: ClientCsFloat)(implicit C: Clock[IO]) extends Http4sDsl[IO] {
-
+class RoutesInventory(resources: ResourcesService)(implicit C: Clock[IO]) extends Http4sDsl[IO] {
+  
+  import resources.inventoryRefresh.getInventory
+  
   implicit def logger = Slf4jLogger.getLogger[IO]
   
   def routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
@@ -35,23 +29,23 @@ class RoutesInventory(clientPg: ClientPostgres, clientSteam: ClientSteam, client
       (actionValidated, countValidated)
         .mapN((action, count) =>
           action match {
-            case ActionInventory.refresh => refreshInventory(clientSteam, clientPg, steamId, count)
+            case ActionInventory.refresh => getInventory(steamId, count)
           }
         )
         .valueOr(errors => BadRequest(errors.show))
 
-    case PUT -> Root / "asset" :? AssetIdQPM(assetIdValidated) +& TradingQPM(tradingValidated) =>
-      (assetIdValidated, tradingValidated)
-        .mapN((assetId, trading) => 
-          for {
-            // todo determine if asset_data_b for assetid already exists. if trading true, it must not exist.  if trading false, it must exist
-            assetDataA <- clientPg.selectAsset(assetId)
-            floatValue <- clientCsFloat.getFloatValue(assetDataA.assetid)
-//            _          <- pgClient.insert(AssetDataB(assetDataA.dexpress_asset_id, floatValue))
-            response   <- NoContent()
-          } yield response 
-        )
-        .valueOr(errors => BadRequest(errors.show))    
+//    case PUT -> Root / "asset" :? AssetIdQPM(assetIdValidated) +& TradingQPM(tradingValidated) =>
+//      (assetIdValidated, tradingValidated)
+//        .mapN((assetId, trading) => 
+//          for {
+//            // todo determine if asset_data_b for assetid already exists. if trading true, it must not exist.  if trading false, it must exist
+//            assetDataA <- clientPg.selectAsset(assetId)
+//            floatValue <- clientCsFloat.getFloatValue(assetDataA.assetid)
+////            _          <- pgClient.insert(AssetDataB(assetDataA.dexpress_asset_id, floatValue))
+//            response   <- NoContent()
+//          } yield response 
+//        )
+//        .valueOr(errors => BadRequest(errors.show))    
                             
                             
     // set state of asset to `trading` || `nottrading`. return error if state already === 

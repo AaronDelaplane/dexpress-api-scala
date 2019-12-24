@@ -11,7 +11,7 @@ import routes.{RoutesHealth, RoutesInventory}
 object Main extends IOApp with Http4sDsl[IO] {
   
   override def run(args: List[String]): IO[ExitCode] =
-    ResourcesService.make.use(resources =>
+    _ResourcesService.make.use(resources =>
       resources.clientFlyway.migrate *>
       BlazeServerBuilder[IO]
         .bindHttp(
@@ -21,7 +21,7 @@ object Main extends IOApp with Http4sDsl[IO] {
         .withHttpApp {
           
           val routesHealth    = new RoutesHealth
-          val routesInventory = new RoutesInventory(resources.clientPg, resources.clientSteam, resources.clientCsgoFloat)
+          val routesInventory = new RoutesInventory(resources)
           
           val routes: HttpRoutes[IO] = Router[IO](
             "/" -> {

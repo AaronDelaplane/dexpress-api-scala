@@ -1,10 +1,11 @@
-import DecoderSpec._
+//import DecoderSpec._
 import codecs._
 import datatypes._
 import io.circe.parser.parse
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder, Json}
 import org.scalatest._
+import utils._
 
 import scala.io.Source
 
@@ -46,16 +47,16 @@ class DecoderSpec extends FlatSpec with Matchers {
 
 object DecoderSpec {
   
-  def getResourceUnsafe(path: String): String = {
-    val source = Source.fromResource(path)
-    val string = source.mkString
-    source.close()
-    string
-  }
-
-  def decodeFile[A](path: String)(implicit d: Decoder[A]): Decoder.Result[A] =
-    parse(getResourceUnsafe(path))
-      .getOrElse(Json.Null)
-      .as[A]
+//  def getResourceUnsafe(path: String): String = {
+//    val source = Source.fromResource(path)
+//    val string = source.mkString
+//    source.close()
+//    string
+//  }
+//
+//  def decodeFile[A](path: String)(implicit d: Decoder[A]): Decoder.Result[A] =
+//    parse(getResourceUnsafe(path))
+//      .getOrElse(Json.Null)
+//      .as[A]
     
 }

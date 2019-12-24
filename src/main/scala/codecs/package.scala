@@ -1,16 +1,20 @@
 import java.util.UUID
 
 import cats.effect.IO
+//import cats.implicits._
+
+import io.circe.syntax._
 import cats.implicits._
 import cats.kernel.Monoid
 import ciris.{ConfigDecoder, ConfigError, Secret}
 import datatypes._
 import enums._
 import eu.timepit.refined.types.net.UserPortNumber
-import io.circe.{Decoder, Encoder}
-import org.http4s.circe.jsonOf
+import io.circe.{Decoder, Encoder, Json}
+import io.circe.Encoder._
+import org.http4s.circe._
 import org.http4s.dsl.impl.ValidatingQueryParamDecoderMatcher
-import org.http4s.{EntityDecoder, ParseFailure, QueryParamDecoder, Uri}
+import org.http4s.{EntityDecoder, EntityEncoder, ParseFailure, QueryParamDecoder, Uri}
 
 import scala.util.Try
 import scala.util.matching.Regex
@@ -58,6 +62,53 @@ package object codecs {
     Decoder.forProduct2("type", "value")(SteamNestedDescription.apply)
   implicit def steamNestedDescriptionEncoder: Encoder[SteamNestedDescription] =
     Encoder.forProduct2("type", "value")(x => (x.`type`, x.value))
+  
+  /*
+  various codecs
+   */
+  implicit def assetEncoder: Encoder[Asset] = (x: Asset) => Json.obj(
+    ("dexpress_asset_id", x.dexpress_asset_id.asJson),
+    ("trading", x.trading.asJson),
+    ("steam_id", x.steam_id.asJson),
+    ("floatvalue", x.floatvalue.asJson),
+    ("classid", x.classid.asJson),
+    ("instanceid", x.instanceid.asJson),
+    ("appid", x.appid.asJson),
+    ("assetid", x.assetid.asJson),
+    ("amount", x.amount.asJson),
+    ("market_hash_name", x.market_hash_name.asJson),
+    ("icon_url", x.icon_url.asJson),
+    ("tradable", x.tradable.asJson),
+    ("type", x.`type`.asJson),
+    ("link_id", x.link_id.asJson),
+    ("sticker_urls", x.sticker_urls.asJson),
+    ("tag_exterior_category", x.tag_exterior_category.asJson),
+    ("tag_exterior_internal_name", x.tag_exterior_internal_name.asJson),
+    ("tag_exterior_localized_category_name", x.tag_exterior_localized_category_name.asJson),
+    ("tag_exterior_localized_tag_name", x.tag_exterior_localized_tag_name.asJson),
+    ("tag_rarity_category", x.tag_rarity_category.asJson),
+    ("tag_rarity_internal_name", x.tag_rarity_internal_name.asJson),
+    ("tag_rarity_localized_category_name", x.tag_rarity_localized_category_name.asJson),
+    ("tag_rarity_localized_tag_name", x.tag_rarity_localized_tag_name.asJson),
+    ("tag_rarity_color", x.tag_rarity_color.asJson),
+    ("tag_type_category", x.tag_type_category.asJson),
+    ("tag_type_internal_name", x.tag_type_internal_name.asJson),
+    ("tag_type_localized_category_name", x.tag_type_localized_category_name.asJson),
+    ("tag_type_localized_tag_name", x.tag_type_localized_tag_name.asJson),
+    ("tag_weapon_category", x.tag_weapon_category.asJson),
+    ("tag_weapon_internal_name", x.tag_weapon_internal_name.asJson),
+    ("tag_weapon_localized_category_name", x.tag_weapon_localized_category_name.asJson),
+    ("tag_weapon_localized_tag_name", x.tag_weapon_localized_tag_name.asJson),
+    ("tag_quality_category", x.tag_quality_category.asJson),
+    ("tag_quality_internal_name", x.tag_quality_internal_name.asJson),
+    ("tag_quality_localized_category_name", x.tag_quality_localized_category_name.asJson),
+    ("tag_quality_localized_tag_name", x.tag_quality_localized_tag_name.asJson),
+    ("tag_quality_color", x.tag_quality_color.asJson),
+  )
+  
+//  implicit def nelEncoder: Encoder[NEL[Asset]] = Encoder.encodeNonEmptyList[Asset]
+  
+  implicit def nelAssetEntityEncoder: EntityEncoder[IO, NEL[Asset]] = jsonEncoderOf[IO, NEL[Asset]]
   
   /*
   config codecs --------------------------------------------------------------------------------------------------------

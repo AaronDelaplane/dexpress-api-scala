@@ -3,6 +3,7 @@ package clients.postgres
 import java.util.UUID
 
 import cats.effect.IO
+import cats.syntax.list._
 import datatypes._
 import doobie.implicits._
 import doobie.util.log.LogHandler
@@ -20,18 +21,24 @@ class ClientPostgres(xa: Transactor[IO]) extends Http4sDsl[IO] {
       case Right(_)        => NoContent()
     }
   
-  def insertMany(xs: NEL[Asset], refreshId: UUID, time: Long): IO[Unit] = (
+  def insertMany(xs: NEL[Asset], refreshId: UUID, steamId: String, time: Long): IO[Unit] = (
     for {
       _ <- Statements.insertAssets.updateMany(xs)
-      _ <- Statements.insertEventRefreshAssets(refreshId, time).run
+      _ <- Statements.insertEventRefreshAssets(refreshId, steamId, time).run
     } yield ()
   ).transact(xa)
     
   def selectAsset(assetId: UUID): IO[Asset] =
     Statements.selectAsset(assetId).unique.transact(xa) 
   
-  def selectAssets(refreshId: String) =
+  def selectAssets(refreshId: UUID): IO[NEL[Asset]] =
     Statements.selectAssets(refreshId).to[List].transact(xa)
+    .flatMap[NEL[Asset]](
+      _.toNel.fold[IO[NEL[Asset]]](IO.raiseError(new Exception(s"no-assets-found-for-refresh-id: $refreshId")))(IO.pure(_)))
+     
+  
+  def selectEventsRefreshAssets(steamId: String): IO[Option[NEL[EventRefreshAssets]]] =
+    Statements.selectEventsRefreshAssets(steamId).to[List].transact(xa).map(_.toNel)
   
 //  def insert(x: AssetDataB): IO[Int] =
 //    Statements.insertAssetDataB.run(x).transact(xa)
