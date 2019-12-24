@@ -1,4 +1,4 @@
-package datatypes
+package types
 
 case class SteamAssetValidated(
   classid:     String,

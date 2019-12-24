@@ -1,8 +1,8 @@
-package datamaps.toassets.helpers
+package functions.toassets.functions
 
 import cats.data.NonEmptyList
 import cats.implicits._
-import datatypes._
+import types._
 
 object ToSteamAssetsAndDescriptions {
 

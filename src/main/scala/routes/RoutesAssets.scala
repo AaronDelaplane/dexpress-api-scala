@@ -1,38 +1,29 @@
 package routes
 
 import cats.effect._
-import cats.implicits._
-import codecs._
-import datatypes.ResourcesService
-import enums._
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import show._
-/*
-finish parsing of steam inventory to asset
-should instance_id ever be `0`? yes 
-todo set asset to `trading`. set asset to `nottrading`
-todo search assets
-todo refresh existing inventory
-todo add refresh time limit   
- */
+import types.ResourcesService
 
-class RoutesInventory(resources: ResourcesService)(implicit C: Clock[IO]) extends Http4sDsl[IO] {
+class RoutesAssets(resources: ResourcesService)(implicit C: Clock[IO]) extends Http4sDsl[IO] {
   
-  import resources.inventoryRefresh.getInventory
+  import resources._
   
   implicit def logger = Slf4jLogger.getLogger[IO]
-  
+
   def routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
-    case GET -> Root / "inventory" / steamId :? InventoryActionQPM(actionValidated) +& CountQPM(countValidated) =>
-      (actionValidated, countValidated)
-        .mapN((action, count) =>
-          action match {
-            case ActionInventory.refresh => getInventory(steamId, count)
-          }
-        )
-        .valueOr(errors => BadRequest(errors.show))
+
+    case GET -> Root / "assets" / steamId => getAssets.run(steamId)
+                                                                    
+//    case GET -> Root / "assets" / steamId :? InventoryActionQPM(actionValidated) +& CountQPM(countValidated) =>
+//      (actionValidated, countValidated)
+//        .mapN((action, count) =>
+//          action match {
+//            case ActionAssets.Get => getAssets.run(steamId, count)
+//          }
+//        )
+//        .valueOr(errors => BadRequest(errors.show))
 
 //    case PUT -> Root / "asset" :? AssetIdQPM(assetIdValidated) +& TradingQPM(tradingValidated) =>
 //      (assetIdValidated, tradingValidated)

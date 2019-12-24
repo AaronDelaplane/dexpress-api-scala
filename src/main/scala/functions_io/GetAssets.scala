@@ -1,4 +1,4 @@
-package compositions
+package functions_io
 
 import java.util.UUID
 import java.util.UUID.randomUUID
@@ -9,17 +9,17 @@ import cats.instances.long._
 import cats.syntax.applicative._
 import clients.postgres.ClientPostgres
 import clients.steam.ClientSteam
-import datamaps.toassets.ToAssets.toAssets
-import datatypes._
+import codecs._
+import functions.toassets.ToAssets.toAssets
 import org.http4s.Response
 import org.http4s.dsl.Http4sDsl
-import codecs._
+import types._
 
 import scala.concurrent.duration.MILLISECONDS
 
-class InventoryCompositions(clientSteam: ClientSteam, clientPg: ClientPostgres)(implicit C: Clock[IO]) extends Http4sDsl[IO] {
+class GetAssets(clientSteam: ClientSteam, clientPg: ClientPostgres)(implicit C: Clock[IO]) extends Http4sDsl[IO] {
 
-  def getInventory(steamId: String, count: Count): IO[Response[IO]] =
+  def run(steamId: String, count: Count = Count(1000)): IO[Response[IO]] =
     for {
       time         <- C.monotonic(MILLISECONDS)
       maybeEvents  <- clientPg.selectEventsRefreshAssets(steamId)

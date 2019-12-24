@@ -3,18 +3,18 @@ import java.util.UUID
 import cats.effect.IO
 //import cats.implicits._
 
-import io.circe.syntax._
 import cats.implicits._
 import cats.kernel.Monoid
 import ciris.{ConfigDecoder, ConfigError, Secret}
-import datatypes._
 import enums._
 import eu.timepit.refined.types.net.UserPortNumber
-import io.circe.{Decoder, Encoder, Json}
 import io.circe.Encoder._
+import io.circe.syntax._
+import io.circe.{Decoder, Encoder, Json}
 import org.http4s.circe._
 import org.http4s.dsl.impl.ValidatingQueryParamDecoderMatcher
 import org.http4s.{EntityDecoder, EntityEncoder, ParseFailure, QueryParamDecoder, Uri}
+import types._
 
 import scala.util.Try
 import scala.util.matching.Regex
@@ -136,9 +136,9 @@ package object codecs {
       case true  => Count(n).asRight[ParseFailure]
       case false => ParseFailure(s"count must be ${r.start} to ${r.end}", Monoid[String].empty).asLeft[Count]})
 
-  implicit def inventoryActionQPD: QueryParamDecoder[ActionInventory] =
-    QueryParamDecoder[String].emap[ActionInventory](ActionInventory.withNameLowercaseOnlyOption(_).fold(
-      ParseFailure(s"action must be one of: ${ActionInventory.values}", Monoid[String].empty).asLeft[ActionInventory]
+  implicit def inventoryActionQPD: QueryParamDecoder[ActionAssets] =
+    QueryParamDecoder[String].emap[ActionAssets](ActionAssets.withNameLowercaseOnlyOption(_).fold(
+      ParseFailure(s"action must be one of: ${ActionAssets.values}", Monoid[String].empty).asLeft[ActionAssets]
     )(_.asRight[ParseFailure]))
   
   implicit def uuidQPD: QueryParamDecoder[UUID] =
@@ -153,7 +153,7 @@ package object codecs {
   
   object CountQPM extends ValidatingQueryParamDecoderMatcher[Count]("count")
   
-  object InventoryActionQPM extends ValidatingQueryParamDecoderMatcher[ActionInventory]("action")
+  object InventoryActionQPM extends ValidatingQueryParamDecoderMatcher[ActionAssets]("action")
 
   object TradingQPM extends ValidatingQueryParamDecoderMatcher[Boolean]("trading")
 

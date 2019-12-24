@@ -1,6 +1,6 @@
 import cats.data.NonEmptyList
 
-package object datatypes {
+package object types {
   
   /*
   generic types

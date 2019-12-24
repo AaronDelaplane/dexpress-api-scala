@@ -1,4 +1,4 @@
-package datatypes
+package types
 
 import eu.timepit.refined.types.net.UserPortNumber
 import org.http4s.Uri

@@ -1,9 +1,9 @@
-package datamaps.toassets.helpers
+package functions.toassets.functions
 
 import cats.effect.IO
 import cats.implicits._
-import datatypes._
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import types._
 
 object ToSteamAssetsValidated {
 

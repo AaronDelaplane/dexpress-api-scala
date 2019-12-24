@@ -2,11 +2,11 @@ package clients.postgres
 
 import java.util.UUID
 
-import datatypes._
 import doobie._
 import doobie.implicits._
 import doobie.postgres.implicits._
 import org.http4s.Uri
+import types._
 
 object Statements {
     

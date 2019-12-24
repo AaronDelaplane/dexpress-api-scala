@@ -1,14 +1,13 @@
 package clients.steam
 
 import cats.effect.{ConcurrentEffect, IO, Resource}
-import codecs._
-import datatypes._
+import functions_io.decodeFile
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.dsl.Http4sDsl
-import org.http4s.{Request, Uri}
-import utils._
+import types.SteamInventory
+import codecs.steamInventoryDecoder
 
 import scala.concurrent.ExecutionContext.global
 

@@ -1,4 +1,4 @@
-package datatypes
+package types
 
 import java.util.UUID
 

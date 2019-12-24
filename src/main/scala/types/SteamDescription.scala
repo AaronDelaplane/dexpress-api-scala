@@ -1,4 +1,4 @@
-package datatypes
+package types
 
 final case class SteamDescription(
   // properties common to both assets and descriptions

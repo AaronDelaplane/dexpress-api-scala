@@ -1,13 +1,9 @@
-//import DecoderSpec._
 import codecs._
-import datatypes._
-import io.circe.parser.parse
+import types._
 import io.circe.syntax._
-import io.circe.{Decoder, Encoder, Json}
+import io.circe.{Decoder, Encoder}
 import org.scalatest._
-import utils._
-
-import scala.io.Source
+import functions_io.decodeFile
 
 /*
 Notes:

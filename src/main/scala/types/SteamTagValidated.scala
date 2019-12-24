@@ -1,4 +1,4 @@
-package datatypes
+package types
 
 sealed trait SteamTagValidated {
   def category:                String                  

@@ -1,4 +1,4 @@
-package datatypes
+package types
 
 final case class SteamInventory(
   assets:       Option[List[SteamAsset]],

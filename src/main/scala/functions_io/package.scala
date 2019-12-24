@@ -1,10 +1,9 @@
-import cats.effect.IO
-import io.circe.{Decoder, Json}
 import io.circe.parser.parse
+import io.circe.{Decoder, Json}
 
 import scala.io.Source
 
-package object utils {
+package object functions_io {
 
   def getResourceUnsafe(path: String): String = {
     val source = Source.fromResource(path)

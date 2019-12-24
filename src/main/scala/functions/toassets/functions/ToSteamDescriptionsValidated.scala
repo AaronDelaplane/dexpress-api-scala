@@ -1,13 +1,13 @@
-package datamaps.toassets.helpers
+package functions.toassets.functions
 
 import cats.data.NonEmptyList
 import cats.effect.IO
 import cats.implicits._
-import datatypes._
 import enums.SteamTagCategory
 import enums.SteamTagCategory._
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.http4s.Uri
+import types._
 
 import scala.util.matching.Regex
 

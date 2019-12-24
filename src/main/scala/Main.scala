@@ -6,7 +6,7 @@ import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
 import org.http4s.syntax.kleisli._
-import routes.{RoutesHealth, RoutesInventory}
+import routes.{RoutesHealth, RoutesAssets}
 
 object Main extends IOApp with Http4sDsl[IO] {
   
@@ -21,7 +21,7 @@ object Main extends IOApp with Http4sDsl[IO] {
         .withHttpApp {
           
           val routesHealth    = new RoutesHealth
-          val routesInventory = new RoutesInventory(resources)
+          val routesInventory = new RoutesAssets(resources)
           
           val routes: HttpRoutes[IO] = Router[IO](
             "/" -> {

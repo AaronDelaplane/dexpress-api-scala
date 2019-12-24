@@ -4,8 +4,8 @@ import clients.postgres.{ClientFlyway, ClientPostgres, ConfigPostgres}
 import clients.steam.{ClientSteam, ConfigSteamClient}
 import doobie.util.transactor.Transactor
 import org.flywaydb.core.Flyway
-import compositions._
-import datatypes.ResourcesService
+import functions_io._
+import types.ResourcesService
 
 object _ResourcesService {
 
@@ -39,6 +39,6 @@ object _ResourcesService {
         new ClientFlyway(flyway),
         clientPg, // todo remove if pkg compositions is all that's needed
         clientSteam,
-        new InventoryCompositions(clientSteam, clientPg)
+        new GetAssets(clientSteam, clientPg)
       )
 }

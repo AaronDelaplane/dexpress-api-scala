@@ -4,12 +4,12 @@ import java.util.UUID
 
 import cats.effect.IO
 import cats.syntax.list._
-import datatypes._
 import doobie.implicits._
 import doobie.util.log.LogHandler
 import doobie.util.transactor.Transactor
 import org.http4s.Response
 import org.http4s.dsl.Http4sDsl
+import types._
 
 class ClientPostgres(xa: Transactor[IO]) extends Http4sDsl[IO] {
 

@@ -1,4 +1,4 @@
-package datatypes
+package types
 
 final case class SteamTag(
   category:                Option[String],                  
