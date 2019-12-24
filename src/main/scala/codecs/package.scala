@@ -106,8 +106,6 @@ package object codecs {
     ("tag_quality_color", x.tag_quality_color.asJson),
   )
   
-//  implicit def nelEncoder: Encoder[NEL[Asset]] = Encoder.encodeNonEmptyList[Asset]
-  
   implicit def nelAssetEntityEncoder: EntityEncoder[IO, NEL[Asset]] = jsonEncoderOf[IO, NEL[Asset]]
   
   /*
