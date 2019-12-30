@@ -1,4 +1,4 @@
-package functions.toassets.functions
+package functions.noneffectful.toassets.functions
 
 import cats.data.NonEmptyList
 import cats.effect.IO

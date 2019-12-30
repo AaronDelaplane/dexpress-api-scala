@@ -1,9 +1,11 @@
-import io.circe.parser.parse
-import io.circe.{Decoder, Json}
+package functions
 
 import scala.io.Source
+import io.circe.Json
+import io.circe.parser.parse
+import io.circe.Decoder
 
-package object functions_io {
+package object effectful {
 
   def getResourceUnsafe(path: String): String = {
     val source = Source.fromResource(path)

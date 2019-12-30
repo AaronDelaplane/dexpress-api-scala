@@ -1,19 +1,18 @@
-package functions_io
+package functions.effectful
 
-import java.util.UUID
 import java.util.UUID.randomUUID
 
 import cats.effect.{Clock, IO}
 import cats.instances.long._
 import cats.syntax.applicative._
+import cats.syntax.option._
 import clients.postgres.ClientPostgres
 import clients.steam.ClientSteam
 import codecs._
-import functions.toassets.ToAssets.toAssets
+import functions.noneffectful.toassets.ToAssets.toAssets
 import org.http4s.Response
 import org.http4s.dsl.Http4sDsl
 import types._
-import cats.syntax.option._
 
 import scala.concurrent.duration.MILLISECONDS
 

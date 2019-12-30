@@ -1,4 +1,4 @@
-package functions.toassets
+package functions.noneffectful.toassets
 
 import java.util.UUID
 

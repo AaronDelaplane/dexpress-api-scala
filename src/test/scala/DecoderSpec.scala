@@ -3,7 +3,7 @@ import types._
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder}
 import org.scalatest._
-import functions_io.decodeFile
+import functions.effectful.decodeFile
 
 /*
 Notes:
@@ -39,20 +39,4 @@ class DecoderSpec extends FlatSpec with Matchers {
   "steam inventory codecs" should "decode & encode large json" in
     attemptDecodeEncode[SteamInventory]("steam-inventory-large.json")            
    
-}
-
-object DecoderSpec {
-  
-//  def getResourceUnsafe(path: String): String = {
-//    val source = Source.fromResource(path)
-//    val string = source.mkString
-//    source.close()
-//    string
-//  }
-//
-//  def decodeFile[A](path: String)(implicit d: Decoder[A]): Decoder.Result[A] =
-//    parse(getResourceUnsafe(path))
-//      .getOrElse(Json.Null)
-//      .as[A]
-    
 }
