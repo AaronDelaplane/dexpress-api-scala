@@ -21,29 +21,25 @@ class ClientPostgres(xa: Transactor[IO]) extends Http4sDsl[IO] {
       case Right(_)        => NoContent()
     }
   
-  def insertMany(xs: NEL[Asset], refreshId: UUID, steamId: String, time: Long): IO[Unit] = (
+  def insertMany(xs: NEL[Asset], iR: IdRefresh, iS: IdSteam, time: Long): IO[Unit] = (
     for {
       _ <- Statements.insertAssets.updateMany(xs)
-      _ <- Statements.insertEventRefreshAssets(refreshId, steamId, time).run
+      _ <- Statements.insertEventRefreshAssets(iR, iS, time).run
     } yield ()
   ).transact(xa)
     
-  def selectAsset(assetId: UUID): IO[Asset] =
-    Statements.selectAsset(assetId).unique.transact(xa) 
+  def selectAsset(iA: IdAsset): IO[Asset] =
+    Statements.selectAsset(iA).unique.transact(xa) 
   
-  def selectAssets(refreshId: UUID): IO[NEL[Asset]] =
-    Statements.selectAssets(refreshId).to[List].transact(xa)
+  def selectAssets(iR: IdRefresh): IO[NEL[Asset]] =
+    Statements.selectAssets(iR).to[List].transact(xa)
     .flatMap[NEL[Asset]](
-      _.toNel.fold[IO[NEL[Asset]]](IO.raiseError(new Exception(s"no-assets-found-for-refresh-id: $refreshId")))(IO.pure(_)))
-     
+      _.toNel.fold[IO[NEL[Asset]]](IO.raiseError(new Exception(s"no-assets-found-for-refresh-id: $iR")))(IO.pure(_)))
   
-  def selectEventsRefreshAssets(steamId: String): IO[Option[NEL[EventRefreshAssets]]] =
-    Statements.selectEventsRefreshAssets(steamId).to[List].transact(xa).map(_.toNel)
+  def selectEventsRefreshAssets(iS: IdSteam): IO[Option[NEL[EventRefreshAssets]]] =
+    Statements.selectEventsRefreshAssets(iS).to[List].transact(xa).map(_.toNel)
   
-//  def insert(x: AssetDataB): IO[Int] =
-//    Statements.insertAssetDataB.run(x).transact(xa)
-  
-//  def updateAssetTradingState(uuid: UUID, b: Boolean): IO[Int] =
-//    Statements.updateAssetTradingState(uuid, b).run.transact(xa)
+  def updateAssetTradingState(iA: IdAsset, b: Boolean): IO[Int] =
+    Statements.updateAssetTradingState(iA, b).run.transact(xa)
   
 }

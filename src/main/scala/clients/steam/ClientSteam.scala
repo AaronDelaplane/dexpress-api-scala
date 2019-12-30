@@ -8,6 +8,7 @@ import org.http4s.dsl.Http4sDsl
 import types.SteamInventory
 import codecs._
 import org.http4s.{Request, Uri}
+import types._
 
 import scala.concurrent.ExecutionContext.global
 
@@ -15,12 +16,12 @@ class ClientSteam(config: ConfigSteamClient, httpClient: Client[IO]) extends Htt
   
   private val logger = Slf4jLogger.getLogger[IO]
   
-  def getInventory(steamId: String, count: Int): IO[SteamInventory] =
+  def getInventory(iS: IdSteam, count: Int): IO[SteamInventory] =
     for {
       si <- httpClient.expect[SteamInventory](
               Request[IO]()
                 .withMethod(GET)
-                .withUri(Uri.unsafeFromString(s"${config.steamUri}/inventory/$steamId/730/2?l=english&count=$count")))
+                .withUri(Uri.unsafeFromString(s"${config.steamUri}/inventory/$iS/730/2?l=english&count=$count")))
       _  <- logger.info(s"""
               |steam-inventory-fetch-results:
               |  assets-count:       ${si.assets.map(_.size)}

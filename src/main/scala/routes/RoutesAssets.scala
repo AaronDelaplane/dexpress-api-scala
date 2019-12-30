@@ -4,7 +4,7 @@ import cats.effect._
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
-import types.ResourcesService
+import types.{ResourcesService, _}
 
 class RoutesAssets(resources: ResourcesService)(implicit C: Clock[IO]) extends Http4sDsl[IO] {
   
@@ -14,7 +14,7 @@ class RoutesAssets(resources: ResourcesService)(implicit C: Clock[IO]) extends H
 
   def routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
 
-    case GET -> Root / "assets" / steamId => getAssets.run(steamId)
+    case GET -> Root / "assets" / steamId => getAssets.run(IdSteam(steamId), Count(1000))
                                                                     
 //    case GET -> Root / "assets" / steamId :? InventoryActionQPM(actionValidated) +& CountQPM(countValidated) =>
 //      (actionValidated, countValidated)

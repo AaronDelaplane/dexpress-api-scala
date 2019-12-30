@@ -1,8 +1,6 @@
 import java.util.UUID
 
 import cats.effect.IO
-//import cats.implicits._
-
 import cats.implicits._
 import cats.kernel.Monoid
 import ciris.{ConfigDecoder, ConfigError, Secret}
@@ -67,7 +65,7 @@ package object codecs {
   various codecs
    */
   implicit def assetEncoder: Encoder[Asset] = (x: Asset) => Json.obj(
-    ("dexpress_asset_id", x.dexpress_asset_id.asJson),
+    ("id_asset", x.id_asset.asJson),
     ("trading", x.trading.asJson),
     ("steam_id", x.steam_id.asJson),
     ("floatvalue", x.floatvalue.asJson),

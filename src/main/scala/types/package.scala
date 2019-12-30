@@ -1,16 +1,18 @@
+import java.util.UUID
+
 import cats.data.NonEmptyList
 
 package object types {
   
   /*
-  generic types
+  generic types --------------------------------------------------------------------------------------------------------
    */
   type NEL[A]     = NonEmptyList[A]
 
   type ErrorOr[A] = Either[String, A]
   
   /*
-  steam-related types
+  steam-related types --------------------------------------------------------------------------------------------------
    */
   type SI  = SteamInventory
   
@@ -24,5 +26,11 @@ package object types {
   type STVWithoutColor   = SteamTagValidatedWithoutColor
   type STVWithMaybeColor = SteamTagValidatedWithMaybeColor
   type STVWithColor      = SteamTagValidatedWithColor
-
+  
+  /*
+  value classes --------------------------------------------------------------------------------------------------------
+   */
+  final case class IdAsset(value: UUID) extends AnyVal
+  final case class IdRefresh(value: UUID) extends AnyVal
+  final case class IdSteam(value: String) extends AnyVal
 }

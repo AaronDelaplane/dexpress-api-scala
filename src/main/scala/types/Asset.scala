@@ -5,8 +5,8 @@ import java.util.UUID
 import org.http4s.Uri
 
 final case class Asset(
-  dexpress_asset_id: UUID,
-  refresh_id:        UUID,
+  id_asset:          UUID,
+  id_refresh:        UUID,
   trading:           Boolean,
   steam_id:          String,
   floatvalue:        Option[Double],
@@ -52,14 +52,14 @@ final case class Asset(
 
 object Asset {
 
-  def apply(steamId: String, refreshId: UUID)(t: (SDV, SAV)): Asset = {
+  def apply(iS: IdSteam, iR: IdRefresh)(t: (SDV, SAV)): Asset = {
     val d = t._1
     val a = t._2
     Asset(
-      dexpress_asset_id = UUID.randomUUID,
-      refresh_id        = refreshId,
+      id_asset          = UUID.randomUUID,
+      id_refresh        = iR.value,
       trading           = false,
-      steam_id          = steamId,
+      steam_id          = iS.value,
       floatvalue        = None,
       classid           = d.classid,
       instanceid        = d.instanceid,
