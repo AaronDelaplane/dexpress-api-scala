@@ -4,7 +4,6 @@ import clients.postgres.{ClientFlyway, ClientPostgres, ConfigPostgres}
 import clients.steam.{ClientSteam, ConfigSteamClient}
 import doobie.util.transactor.Transactor
 import org.flywaydb.core.Flyway
-import functions.effectful.GetAssets
 import types.ResourcesService
 
 object _ResourcesService {

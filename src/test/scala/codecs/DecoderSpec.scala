@@ -1,9 +1,10 @@
-import codecs._
-import types._
+package codecs
+
+import functions.effectful.decodeFile
 import io.circe.syntax._
 import io.circe.{Decoder, Encoder}
 import org.scalatest._
-import functions.effectful.decodeFile
+import types._
 
 /*
 Notes:

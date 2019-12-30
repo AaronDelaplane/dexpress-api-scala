@@ -3,7 +3,7 @@ package types
 import java.util.UUID
 
 final case class EventRefreshAssets(
-  refresh_id: UUID,
-  steam_id:   String,
+  id_refresh: UUID,
+  id_steam:   String,
   time:       Long
 )
