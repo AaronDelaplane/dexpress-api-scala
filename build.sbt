@@ -107,13 +107,12 @@ lazy val root = (project in file("."))
         |import org.http4s.{Request, Uri}
         |import org.flywaydb.core.Flyway
         |
-        |import clients.postgres._
-        |import codecs._
-        |import datamaps._
-        |import datatypes._
-        |import enums._
-        |import show._
-        |import clients.postgres.Statements._
+        |import svc.clients.postgres._
+        |import svc.clients.postgres.Statements._
+        |import svc.codecs._
+        |import svc.enums._
+        |import svc.show._
+        |import svc.types._
         |
         |import java.util.UUID
         |

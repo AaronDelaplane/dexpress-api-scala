@@ -5,19 +5,19 @@ import java.util.UUID
 import cats.Monoid
 import cats.effect.IO
 import cats.instances.string.catsKernelStdMonoidForString
-import clients.postgres.Statements._
 import doobie._
 import org.scalatest._
-import types._
+import service.clients.postgres.Statements._
+import service.types._
 
 class StatementsSpec extends FunSuite with Matchers with doobie.scalatest.IOChecker {
   
   implicit val cs = IO.contextShift(ExecutionContexts.synchronous)
   
-  val uuid            = UUID.randomUUID
-  val dexpressAssetId = IdAsset(uuid)
-  val refreshId       = IdRefresh(uuid)
-  val steamId         = IdSteam(Monoid[String].empty)
+  val uuid = UUID.randomUUID
+  val iA   = IdAsset(uuid)
+  val iR   = IdRefresh(uuid)
+  val iS   = IdSteam(Monoid[String].empty)
 
   val transactor = Transactor.fromDriverManager[IO](
     "org.postgresql.Driver", "jdbc:postgresql:inventory", "postgres", "password"
@@ -28,23 +28,27 @@ class StatementsSpec extends FunSuite with Matchers with doobie.scalatest.IOChec
   }
   
   test("insert events_refresh_asset row") {
-    check(insertEventRefreshAssets(refreshId, steamId, 0L))
+    check(insertEventRefreshAssets(iR, iS, 0L))
   }
   
   test("select assets row by id_asset") {
-    check(selectAsset(dexpressAssetId))
+    check(selectAsset(iA))
   }
   
   test("select assets rows by id_refresh") {
-    check(selectAssets(refreshId))
+    check(selectAssets(iR))
   }
   
   test("select events_refresh_assets rows by id_steam") {
-    check(selectEventsRefreshAssets(steamId))
+    check(selectEventsRefreshAssets(iS))
+  }
+
+  test("update asset trading state without floatvalue") {
+    check(updateAsset(iA, StateTrading(true)))
   }
   
-  test("update asset trading state") {
-    check(updateAssetTradingState(dexpressAssetId, true))
+  test("update asset trading state with floatvalue") {
+    check(updateAsset(iA, StateTrading(true), FloatValue(0.0)))
   }
   
 }
