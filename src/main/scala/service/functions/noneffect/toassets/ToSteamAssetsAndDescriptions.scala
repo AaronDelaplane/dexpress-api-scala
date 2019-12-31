@@ -6,7 +6,7 @@ import service.types._
 
 object ToSteamAssetsAndDescriptions {
 
-  def toSAsAndSDsNel(si: SI): ErrorOr[(NEL[SA], NEL[SD])] = {
+  def run(si: SI): ErrorOr[(NEL[SA], NEL[SD])] = {
       type R = (NEL[SA], NEL[SD])
       (si.assets, si.descriptions) match {
         case (None, None) => "missing-assets-&-descriptions".asLeft[R]

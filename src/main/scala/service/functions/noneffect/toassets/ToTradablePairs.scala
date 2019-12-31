@@ -15,7 +15,7 @@ object ToTradablePairs {
   /*
   return nel of tradable assets & description pairs or error  
    */
-  def toTradablePairsNel(ds: NEL[SDV], as: NEL[SAV]): IO[NEL[(SDV, SAV)]] =
+  def run(ds: NEL[SDV], as: NEL[SAV]): IO[NEL[(SDV, SAV)]] =
     for {
       resultA    <- filter(ds, as).pure[IO]
       _          <- log(ds, as, resultA)

@@ -15,7 +15,7 @@ object ToSteamDescriptionsValidated {
 
   private val logger = Slf4jLogger.getLogger[IO]
   
-  def toSDsValidatedNel(xs: NEL[SD]): IO[NEL[SDV]] = {
+  def run(xs: NEL[SD]): IO[NEL[SDV]] = {
     val (errors, vSDs) = xs.toList.partitionMap(toSDValidated)
     for {
       _   <- log(errors, vSDs)

@@ -9,7 +9,7 @@ object ToSteamAssetsValidated {
 
   private val logger = Slf4jLogger.getLogger[IO]
 
-  def toSAsValidatedNel(xs: NEL[SA]): IO[NEL[SAV]] = {
+  def run(xs: NEL[SA]): IO[NEL[SAV]] = {
     val (errors, vSAs) = xs.toList.partitionMap(toSAValidated)
     for {
       _   <- log(errors, vSAs)
