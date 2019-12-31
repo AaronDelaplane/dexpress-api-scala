@@ -13,15 +13,15 @@ import org.http4s.Response
 import org.http4s.dsl.Http4sDsl
 import types._
 
-import scala.concurrent.duration.MILLISECONDS
+import scala.concurrent.duration.SECONDS
 
-class GetAssets(cS: ClientSteam, cP: ClientPostgres)(implicit C: Clock[IO]) extends Http4sDsl[IO] {
+class ToAssets(cS: ClientSteam, cP: ClientPostgres)(implicit C: Clock[IO]) extends Http4sDsl[IO] {
   
   def run(iS: IdSteam, c: Count): IO[Response[IO]] =
     for {
-      time         <- C.monotonic(MILLISECONDS)
+      time         <- C.realTime(SECONDS)
       maybeEvents  <- cP.selectEventsRefreshAssets(iS)
-      maybeEventId  = maybeEvents.flatMap(toMaybeNonExpiredEventId(_, time, 10000))
+      maybeEventId  = maybeEvents.flatMap(toMaybeNonExpiredEventId(_, time, 5))
       assets       <- maybeEventId.fold(refreshAssets(iS, c, time).flatMap(cP.selectAssets))(cP.selectAssets)
       response     <- Ok(assets)
     } yield response

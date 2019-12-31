@@ -5,6 +5,7 @@ import clients.steam.{ClientSteam, ConfigSteamClient}
 import doobie.util.transactor.Transactor
 import org.flywaydb.core.Flyway
 import types.ResourcesService
+import functions.effectful.ToAssets
 
 object _ResourcesService {
 
@@ -36,8 +37,8 @@ object _ResourcesService {
         configService,
         clientCsFloat,
         new ClientFlyway(flyway),
-        clientPg, // todo remove if pkg compositions is all that's needed
+        clientPg, // todo remove if pkg functions.effectful is all that's needed
         clientSteam,
-        new GetAssets(clientSteam, clientPg)
+        new ToAssets(clientSteam, clientPg)
       )
 }

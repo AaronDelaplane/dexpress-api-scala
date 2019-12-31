@@ -3,7 +3,7 @@ package types
 import clients.csfloat.ClientCsFloat
 import clients.postgres.{ClientFlyway, ClientPostgres}
 import clients.steam.ClientSteam
-import functions.effectful.GetAssets
+import functions.effectful.ToAssets
 
 final case class ResourcesService(
   // config
@@ -13,5 +13,5 @@ final case class ResourcesService(
   clientFlyway:    ClientFlyway,
   clientPg:        ClientPostgres,
   clientSteam:     ClientSteam,
-  getAssets:       GetAssets
+  getAssets:       ToAssets
 )

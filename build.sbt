@@ -20,7 +20,7 @@ val refinedVersion  = "0.9.10"
 lazy val root = (project in file("."))
   .enablePlugins(JavaAppPackaging, DockerPlugin)
   .settings(
-    name := "dexpress-inventory-service",
+    name := "inventory-service",
     
     // scalafmtOnCompile := true,
     

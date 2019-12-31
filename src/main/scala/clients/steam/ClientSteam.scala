@@ -1,14 +1,13 @@
 package clients.steam
 
 import cats.effect.{ConcurrentEffect, IO, Resource}
+import codecs._
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.dsl.Http4sDsl
-import types.SteamInventory
-import codecs._
 import org.http4s.{Request, Uri}
-import types._
+import types.{SteamInventory, _}
 
 import scala.concurrent.ExecutionContext.global
 
@@ -21,7 +20,7 @@ class ClientSteam(config: ConfigSteamClient, httpClient: Client[IO]) extends Htt
       si <- httpClient.expect[SteamInventory](
               Request[IO]()
                 .withMethod(GET)
-                .withUri(Uri.unsafeFromString(s"${config.steamUri}/inventory/$iS/730/2?l=english&count=$count")))
+                .withUri(Uri.unsafeFromString(s"${config.steamUri}/inventory/${iS.value}/730/2?l=english&count=$count")))
       _  <- logger.info(s"""
               |steam-inventory-fetch-results:
               |  assets-count:       ${si.assets.map(_.size)}
@@ -35,6 +34,7 @@ class ClientSteam(config: ConfigSteamClient, httpClient: Client[IO]) extends Htt
 
   /*
   import functions_io.decodeFile
+  
   def getInventory(steamId: String, count: Int): IO[SteamInventory] =
     decodeFile[SteamInventory]("steam-inventory-large.json").fold(x => IO.raiseError(new Exception(x)), IO.pure)
   */

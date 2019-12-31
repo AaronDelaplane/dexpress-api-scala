@@ -1,7 +1,5 @@
 package clients.postgres
 
-import java.util.UUID
-
 import cats.effect.IO
 import cats.syntax.list._
 import doobie.implicits._
@@ -32,14 +30,22 @@ class ClientPostgres(xa: Transactor[IO]) extends Http4sDsl[IO] {
     Statements.selectAsset(iA).unique.transact(xa) 
   
   def selectAssets(iR: IdRefresh): IO[NEL[Asset]] =
-    Statements.selectAssets(iR).to[List].transact(xa)
-    .flatMap[NEL[Asset]](
-      _.toNel.fold[IO[NEL[Asset]]](IO.raiseError(new Exception(s"no-assets-found-for-refresh-id: $iR")))(IO.pure(_)))
+    Statements.selectAssets(iR)
+      .to[List]
+      .transact(xa)
+      .flatMap[NEL[Asset]](
+        _.toNel.fold[IO[NEL[Asset]]](IO.raiseError(new Exception(s"no-assets-found-for-refresh-id: $iR")))(IO.pure(_))
+      )
   
   def selectEventsRefreshAssets(iS: IdSteam): IO[Option[NEL[EventRefreshAssets]]] =
-    Statements.selectEventsRefreshAssets(iS).to[List].transact(xa).map(_.toNel)
+    Statements.selectEventsRefreshAssets(iS)
+      .to[List]
+      .transact(xa)
+      .map(_.toNel)
   
   def updateAssetTradingState(iA: IdAsset, b: Boolean): IO[Int] =
-    Statements.updateAssetTradingState(iA, b).run.transact(xa)
+    Statements.updateAssetTradingState(iA, b)
+      .run
+      .transact(xa)
   
 }

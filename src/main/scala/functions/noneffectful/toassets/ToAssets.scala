@@ -1,14 +1,12 @@
 package functions.noneffectful.toassets
 
-import java.util.UUID
-
 import cats.data._
 import cats.effect._
+import functions.noneffectful.toassets.ToSteamAssetsAndDescriptions.toSAsAndSDsNel
+import functions.noneffectful.toassets.ToSteamAssetsValidated.toSAsValidatedNel
+import functions.noneffectful.toassets.ToSteamDescriptionsValidated.toSDsValidatedNel
+import functions.noneffectful.toassets.ToTradablePairs.toTradablePairsNel
 import types._
-import functions.ToSteamAssetsAndDescriptions.toSAsAndSDsNel
-import functions.ToSteamAssetsValidated.toSAsValidatedNel
-import functions.ToSteamDescriptionsValidated.toSDsValidatedNel
-import functions.ToTradablePairs.toTradablePairsNel
 
 object ToAssets {
 

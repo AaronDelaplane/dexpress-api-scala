@@ -1,4 +1,4 @@
-package functions.noneffectful.toassets.functions
+package functions.noneffectful.toassets
 
 import cats.effect.IO
 import cats.implicits._

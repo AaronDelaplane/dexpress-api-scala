@@ -1,8 +1,8 @@
 package functions
 
-import types.{EventRefreshAssets, IdRefresh, NEL}
-import cats.syntax.option.catsSyntaxOptionId
 import cats.instances.long.catsKernelStdOrderForLong
+import cats.syntax.option.catsSyntaxOptionId
+import types.{EventRefreshAssets, IdRefresh, NEL}
 
 package object noneffectful {
 

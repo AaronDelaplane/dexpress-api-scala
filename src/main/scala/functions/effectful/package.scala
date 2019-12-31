@@ -1,9 +1,9 @@
 package functions
 
-import scala.io.Source
-import io.circe.Json
 import io.circe.parser.parse
-import io.circe.Decoder
+import io.circe.{Decoder, Json}
+
+import scala.io.Source
 
 package object effectful {
 

@@ -1,7 +1,5 @@
 package clients.postgres
 
-import java.util.UUID
-
 import doobie._
 import doobie.implicits._
 import doobie.postgres.implicits._
@@ -68,18 +66,18 @@ object Statements {
     """)
   
   def insertEventRefreshAssets(iR: IdRefresh, iS: IdSteam, time: Long): Update0 =
-    sql"insert into events_refresh_assets(refresh_id, steam_id, time) values (${iR.value}, ${iS.value}, $time)".update
+    sql"insert into events_refresh_assets(id_refresh, steam_id, time) values (${iR.value}, ${iS.value}, $time)".update
   
   def selectAsset(iA: IdAsset): Query0[Asset] =
-    sql"select * from assets where dexpress_asset_id = ${iA.value}".query[Asset]
+    sql"select * from assets where id_asset = ${iA.value}".query[Asset]
 
   def selectAssets(iR: IdRefresh): Query0[Asset] =
-    sql"select * from assets where refresh_id = ${iR.value}".query[Asset]
+    sql"select * from assets where id_refresh = ${iR.value}".query[Asset]
 
   def selectEventsRefreshAssets(iS: IdSteam): Query0[EventRefreshAssets] =
     sql"select * from events_refresh_assets where steam_id = ${iS.value}".query[EventRefreshAssets]
 
   def updateAssetTradingState(iA: IdAsset, tradingState: Boolean): Update0 =
-    sql"update assets set trading = $tradingState where dexress_asset_id = ${iA.value}".update
+    sql"update assets set trading = $tradingState where id_asset = ${iA.value}".update
   
 }

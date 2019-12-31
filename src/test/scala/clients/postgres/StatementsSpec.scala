@@ -20,7 +20,7 @@ class StatementsSpec extends FunSuite with Matchers with doobie.scalatest.IOChec
   val steamId         = IdSteam(Monoid[String].empty)
 
   val transactor = Transactor.fromDriverManager[IO](
-    "org.postgresql.Driver", "jdbc:postgresql:assets", "postgres", "password"
+    "org.postgresql.Driver", "jdbc:postgresql:inventory", "postgres", "password"
   )
 
   test("insert assets rows") {

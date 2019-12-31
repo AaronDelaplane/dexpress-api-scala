@@ -1,11 +1,12 @@
 package functions.noneffectful
 
-import cats.data.NonEmptyList
-import org.scalatest.{FlatSpec, Matchers}
-import types.EventRefreshAssets
 import java.util.UUID
-import cats.syntax.show._
+
+import cats.data.NonEmptyList
 import cats.instances.int.catsStdShowForInt
+import cats.syntax.show._
+import org.scalatest.{FlatSpec, Matchers}
+import types.{EventRefreshAssets, _}
 
 class NonEffectfulSpec extends FlatSpec with Matchers {
   
@@ -20,11 +21,11 @@ class NonEffectfulSpec extends FlatSpec with Matchers {
     EventRefreshAssets(uuid1, "", 10L), List(EventRefreshAssets(uuid2, "", 20L), EventRefreshAssets(uuid3, "", 30L))
   )
   
-  "toMaybeNonExpiredEventId" should "return non-expired event id" in {
-    toMaybeNonExpiredEventId(xs, 40L, 11L) shouldEqual Some(uuid3)
+  "toMaybeNonExpiredEventId" should "return Some[IdRefresh]" in {
+    toMaybeNonExpiredEventId(xs, 40L, 11L) shouldEqual Some(IdRefresh(uuid3))
   }
 
-  "toMaybeNonExpiredEventId" should "return non-expired event id" in {
+  "toMaybeNonExpiredEventId" should "return None" in {
     toMaybeNonExpiredEventId(xs, 40L, 9L) shouldEqual None
   }
   
