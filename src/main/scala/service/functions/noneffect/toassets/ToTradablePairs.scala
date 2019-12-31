@@ -84,10 +84,17 @@ object ToTradablePairs {
   
   private def log(errors: List[String], pairs: List[(SDV, SAV)]): IO[Unit] =
     logger.info(s"""
-      |to-pairs-tradable-summary
-      |  pairs-tradable-count: ${pairs.size}
-      |  errors-count:         ${errors.size}  
-      """.stripMargin)
+      |to-tradable-pairs-summary
+      |  errors-count:              ${errors.size}  
+      |  tradable-pairs-count:      ${pairs.size}
+      |  distinct-classid-count:
+      |    descriptions:            ${pairs.map(_._1).map(_.classid).toSet.size}
+      |    assets:                  ${pairs.map(_._2).map(_.classid).toSet.size}
+      |  distinct-instanceid-count:
+      |    descriptions:            ${pairs.map(_._1).map(_.instanceid).toSet.size}
+      |    assets:                  ${pairs.map(_._2).map(_.instanceid).toSet.size}
+      |  distinct-assetid-count:    ${pairs.map(_._2).map(_.assetid).toSet.size}
+    """.stripMargin)
   
   private def validate(errors: List[String], pairs: List[(SDV, SAV)]): ErrorOr[NEL[(SDV, SAV)]] =
     (NonEmptyList.fromList[String](errors), NonEmptyList.fromList(pairs)) match {
