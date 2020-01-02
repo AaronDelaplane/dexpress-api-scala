@@ -14,12 +14,15 @@ class ClientCsFloat(config: ConfigCsFloat, clientHttp: Client[IO]) extends Http4
 
   def toFloatValue(assetId: String): IO[Double] =
     for {
-    json       <- clientHttp.expect[io.circe.Json](config.uri.+?("s", "").+?("d", "").+?("a", assetId))
-    floatvalue <- root.iteminfo.floatvalue.double.getOption(json).fold[IO[Double]](
-                    IO.raiseError(new Exception("missing-floatvalue-in-csfloat-response"))
-                  )(
-                    _.pure[IO]
-                  )
+      json       <- clientHttp
+                      .expect[io.circe.Json](config.uri.+?("s", "").+?("d", "").+?("a", assetId))
+                      .attempt
+                      .flatMap(_.fold(_ => IO.raiseError(new Exception(s"csfloat-call-failed")), _.pure[IO]))
+      floatvalue <- root.iteminfo.floatvalue.double.getOption(json).fold[IO[Double]](
+                      IO.raiseError(new Exception("missing-floatvalue-in-csfloat-response"))
+                    )(
+                      _.pure[IO]
+                    )
     } yield floatvalue
   
 }

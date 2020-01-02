@@ -6,11 +6,11 @@ set time zone 'UTC';
 
 create table assets(
     -- service-defined properties
-    id_asset          uuid     not null primary key, -- dexpress-defined property
-    id_refresh        uuid     not null,             -- dexpress-defined property
+    id_asset          uuid     not null primary key, -- service-defined property
+    id_refresh        uuid     not null,             -- service-defined property
     trading           boolean  not null,
     -- user-defined properties
-    steam_id          text     not null,             -- todo encrypt <- not a priority while developing locally
+    steam_id          text     not null,
     -- taken from `https://api.csgofloat.com/` response. call is only made when an asset.trading is updated to `true`
     floatvalue        float, 
     -- all properties below line taken from `https://steamcommunity.com/inventory/` response ---------------------------

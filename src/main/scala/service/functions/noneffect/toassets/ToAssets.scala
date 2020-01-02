@@ -1,17 +1,38 @@
 package service.functions.noneffect.toassets
 
-import cats.data._
 import cats.effect._
+import cats.instances.string.catsKernelStdOrderForString
+import cats.syntax.eq._
 import service.types._
 
 object ToAssets {
 
-  def toAssets(iR: IdRefresh, iS: IdSteam, sI: SteamInventory): IO[NonEmptyList[Asset]] =
+  def run(iR: IdRefresh, iS: IdSteam, sI: SteamInventory): IO[NEL[Asset]] =
     for {
       xs     <- ToSteamAssetsAndDescriptions.run(sI).fold(s => IO.raiseError(new Exception(s)), IO.pure)
       sAsV   <- ToSteamAssetsValidated.run(xs._1)
       sDsV   <- ToSteamDescriptionsValidated.run(xs._2)
       tPairs <- ToTradablePairs.run(sDsV, sAsV)
-    } yield tPairs.map(Asset(iS, iR))
+      assets  = tPairs.map(Asset(iS, iR))
+    } yield assets
+
+  def run(iR: IdRefresh, iS: IdSteam, sI: SteamInventory, assetsA: NEL[Asset]): IO[NEL[Asset]] =
+    for {
+      xs     <- ToSteamAssetsAndDescriptions.run(sI).fold(s => IO.raiseError(new Exception(s)), IO.pure)
+      sAsV   <- ToSteamAssetsValidated.run(xs._1)
+      sDsV   <- ToSteamDescriptionsValidated.run(xs._2)
+      tPairs <- ToTradablePairs.run(sDsV, sAsV)
+      assets  = tPairs.map(
+                  t => {
+                    assetsA.find(_.assetid === t._2.assetid).fold(
+                      Asset(iS, iR)(t)
+                    )(
+                      assetA => 
+                        Asset(iS, iR, assetA.id_asset)(t)
+                          .copy(trading = assetA.trading)
+                    )
+                  }
+                )
+    } yield assets
 
 }

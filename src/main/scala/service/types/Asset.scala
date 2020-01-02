@@ -96,11 +96,11 @@ object Asset {
     "tag_quality_color"
   )
 
-  def apply(iS: IdSteam, iR: IdRefresh)(t: (SDV, SAV)): Asset = {
+  def apply(iS: IdSteam, iR: IdRefresh, uuid: UUID = UUID.randomUUID)(t: (SDV, SAV)): Asset = {
     val d = t._1
     val a = t._2
     Asset(
-      id_asset         = UUID.randomUUID,
+      id_asset         = uuid,
       id_refresh       = iR.value,
       trading          = false,
       steam_id         = iS.value,

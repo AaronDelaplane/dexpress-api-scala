@@ -17,7 +17,7 @@ class RoutesAssets(resources: ResourcesService)(implicit C: Clock[IO]) extends H
 
   def routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
 
-    case GET -> Root / "assets" / steamId => toAssets.run(IdSteam(steamId), Count(1000))
+    case GET -> Root / "assets" / steamId => toAssets.run(IdSteam(steamId))
 
     case PUT -> Root / "asset" :? AssetIdQPM(assetIdValidated) +& TradingQPM(tradingValidated) =>
       (assetIdValidated, tradingValidated)

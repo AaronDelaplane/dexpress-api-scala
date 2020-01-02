@@ -15,12 +15,12 @@ class ClientSteam(config: ConfigSteamClient, httpClient: Client[IO]) extends Htt
   
   private val logger = Slf4jLogger.getLogger[IO]
   
-  def getInventory(iS: IdSteam, count: Int): IO[SteamInventory] =
+  def getInventory(iS: IdSteam): IO[SteamInventory] =
     for {
       si <- httpClient.expect[SteamInventory](
               Request[IO]()
                 .withMethod(GET)
-                .withUri(Uri.unsafeFromString(s"${config.steamUri}/inventory/${iS.value}/730/2?l=english&count=$count")))
+                .withUri(Uri.unsafeFromString(s"${config.steamUri}/inventory/${iS.value}/730/2?l=english&count=1000")))
       _  <- logger.info(s"""
               |steam-inventory-fetch-results:
               |  assets-count:       ${si.assets.map(_.size)}

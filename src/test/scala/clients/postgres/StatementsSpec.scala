@@ -22,6 +22,10 @@ class StatementsSpec extends FunSuite with Matchers with doobie.scalatest.IOChec
   val transactor = Transactor.fromDriverManager[IO](
     "org.postgresql.Driver", "jdbc:postgresql:inventory", "postgres", "password"
   )
+  
+  test("delete assets by id_refresh") {
+    check(delete(iR))
+  }
 
   test("insert assets rows") {
     check(insertAssets)

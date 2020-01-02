@@ -13,6 +13,9 @@ object Statements {
   /*
   statements -----------------------------------------------------------------------------------------------------------
    */
+  def delete(iR: IdRefresh): Update0 =
+    sql"delete from assets where id_refresh = ${iR.value}".update
+  
   def insertAssets: Update[Asset] =
     Update[Asset]("""
       insert into assets (

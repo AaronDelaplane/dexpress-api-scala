@@ -27,6 +27,14 @@ class ClientPostgres(xa: Transactor[IO]) extends Http4sDsl[IO] {
       _ <- Statements.insertEventRefreshAssets(iR, iS, time).run
     } yield ()
   ).transact(xa)
+
+  def replace(iRA: IdRefresh, iRB: IdRefresh, xsB: NEL[Asset], iS: IdSteam, time: Long): IO[Unit] = (
+    for {
+      _ <- Statements.delete(iRA).run
+      _ <- Statements.insertAssets.updateMany(xsB)
+      _ <- Statements.insertEventRefreshAssets(iRB, iS, time).run
+    } yield ()
+  ).transact(xa)
     
   def selectAsset(iA: IdAsset): IO[Asset] =
     Statements.selectAsset(iA).unique.transact(xa) 
