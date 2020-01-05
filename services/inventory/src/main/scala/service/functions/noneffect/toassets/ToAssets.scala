@@ -3,6 +3,7 @@ package service.functions.noneffect.toassets
 import cats.effect._
 import cats.instances.string.catsKernelStdOrderForString
 import cats.syntax.eq._
+import service.functions.noneffect.toassets.functions._
 import service.types._
 
 object ToAssets {

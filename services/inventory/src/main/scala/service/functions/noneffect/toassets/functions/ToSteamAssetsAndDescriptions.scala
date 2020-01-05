@@ -1,4 +1,4 @@
-package service.functions.noneffect.toassets
+package service.functions.noneffect.toassets.functions
 
 import cats.data.NonEmptyList
 import cats.implicits._

@@ -17,7 +17,7 @@ val http4sVersion   = "0.21.0-M5"
 val log4CatsVersion = "1.0.1"
 val refinedVersion  = "0.9.10"
 
-lazy val root = (project in file("."))
+lazy val inventoryService = (project in file("./services/inventory"))
   .enablePlugins(JavaAppPackaging, DockerPlugin)
   .settings(
     name := "inventory-service",
