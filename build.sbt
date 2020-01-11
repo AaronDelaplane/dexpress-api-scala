@@ -4,8 +4,6 @@ version := "0.1"
 
 ThisBuild / scalaVersion := "2.13.1"
 
-//scalacOptions += "-Ypartial-unification" // remove if updated to Scala v2.13
-
 ThisBuild / organization := "dexpress"
 
 val catsVersion     = "2.0.0"
@@ -17,10 +15,10 @@ val http4sVersion   = "0.21.0-M5"
 val log4CatsVersion = "1.0.1"
 val refinedVersion  = "0.9.10"
 
-lazy val inventoryService = (project in file("./services/inventory"))
+lazy val root = (project in file("."))
   .enablePlugins(JavaAppPackaging, DockerPlugin)
   .settings(
-    name := "inventory-service",
+    name := "dexpress",
     
     // scalafmtOnCompile := true,
     
@@ -107,12 +105,12 @@ lazy val inventoryService = (project in file("./services/inventory"))
         |import org.http4s.{Request, Uri}
         |import org.flywaydb.core.Flyway
         |
-        |import svc.clients.postgres._
-        |import svc.clients.postgres.Statements._
-        |import svc.codecs._
-        |import svc.enums._
-        |import svc.show._
-        |import svc.types._
+        |import dexpress.clients.postgres._
+        |import dexpress.clients.postgres.Statements._
+        |import dexpress.codecs._
+        |import dexpress.enums._
+        |import dexpress.show._
+        |import dexpress.types._
         |
         |import java.util.UUID
         |

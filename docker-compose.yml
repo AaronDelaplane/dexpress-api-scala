@@ -12,7 +12,7 @@ services:
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
-      POSTGRES_DB: inventory
+      POSTGRES_DB: dexpress
 #    volumes:
 #      - empty_dir:/var/lib/postgresql/data
 #      - ./1.sql:/docker-entrypoint-initdb.d/init.sql  
