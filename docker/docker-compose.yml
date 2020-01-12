@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   api:
-    image: aarondelaplane/dexpress-api-scala:latest
+    image: aarondelaplane/dexpress-backend-scala:latest
     ports:
       - 10000:10000
     depends_on:
@@ -12,5 +12,6 @@ services:
       - 5432:5432
     environment:
       POSTGRES_PASSWORD: password
-      POSTGRES_USER:     postgres
-      POSTGRES_DB:       dexpress
+      POSTGRES_USER: postgres
+      POSTGRES_DB: dexpress
+    

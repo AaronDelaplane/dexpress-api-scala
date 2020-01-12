@@ -3,11 +3,11 @@ package dexpress.functions.noneffect.toassets.functions
 import cats.data.NonEmptyList
 import cats.effect.IO
 import cats.implicits._
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
-import org.http4s.Uri
 import dexpress.enums.SteamTagCategory
 import dexpress.enums.SteamTagCategory._
 import dexpress.types._
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.http4s.Uri
 
 import scala.util.matching.Regex
 
@@ -17,29 +17,31 @@ object ToSteamDescriptionsValidated {
   
   def run(xs: NEL[SD]): IO[NEL[SDV]] = {
     val (errors, vSDs) = xs.toList.partitionMap(toSDValidated)
-    for {
-      _   <- log(errors, vSDs)
-      nel <- validate(errors, vSDs).fold(s => IO.raiseError(new Exception(s)), IO.pure)
-    } yield nel
+    log(errors, vSDs) *> 
+      validate(errors, vSDs).fold(
+        s => IO.raiseError(DataTransformationError("steam descriptions", "validated steam descriptions", s)
+      ), 
+        IO.pure
+      )
   }
   
   private def toSDValidated(x: SD): ErrorOr[SDV] =
     for {
       _log_id          <- s"classid=${x.classid}_instanceid=${x.instanceid}".asRight
       
-      classid          <- x.classid.fold(s"description.classid-not-defined--${_log_id}".asLeft[String])(_.asRight)
-      instanceid       <- x.instanceid.fold(s"description.instanceid-not-defined--${_log_id}".asLeft[String])(_.asRight)
-      appid            <- x.appid.fold(s"description.appid-not-defined--${_log_id}".asLeft[Int])(_.asRight)
+      classid          <- x.classid.fold(s"description.classid not defined for (${_log_id})".asLeft[String])(_.asRight)
+      instanceid       <- x.instanceid.fold(s"description.instanceid not defined for (${_log_id})".asLeft[String])(_.asRight)
+      appid            <- x.appid.fold(s"description.appid not defined for (${_log_id})".asLeft[Int])(_.asRight)
       
-      market_hash_name <- x.market_hash_name.fold(s"description.market_hash_name-not-defined--${_log_id}".asLeft[String])(_.asRight)
-      icon_url         <- x.icon_url.fold(s"description.icon_url-not-defined--${_log_id}".asLeft[String])(_.asRight)
-      tradable         <- x.tradable.fold(s"description.tradable-not-defined--${_log_id}".asLeft[Int])(_.asRight)
-      typ              <- x.`type`.fold(s"description.type-not-defined--${_log_id}".asLeft[String])(_.asRight)
+      market_hash_name <- x.market_hash_name.fold(s"description.market_hash_name not defined for (${_log_id})".asLeft[String])(_.asRight)
+      icon_url         <- x.icon_url.fold(s"description.icon_url not defined for (${_log_id})".asLeft[String])(_.asRight)
+      tradable         <- x.tradable.fold(s"description.tradable not defined for (${_log_id})".asLeft[Int])(_.asRight)
+      typ              <- x.`type`.fold(s"description.type not defined for (${_log_id})".asLeft[String])(_.asRight)
       link_id           = x.market_actions.flatMap(_.headOption).flatMap(_.link).flatMap(toMaybeLinkId)
       sticker_urls     <- x.descriptions.flatMap(toMaybeStickerUrls).map(_.toList).asRight
 
-      _tags            <- x.tags.fold(s"tags-not-defined--${_log_id}".asLeft[List[SteamTag]])(_.asRight)
-      _neTags          <- _tags.toNel.fold(s"tags-empty--${_log_id}".asLeft[NEL[SteamTag]])(_.asRight)
+      _tags            <- x.tags.fold(s"tags not defined for (${_log_id})".asLeft[List[SteamTag]])(_.asRight)
+      _neTags          <- _tags.toNel.fold(s"tags empty for (${_log_id})".asLeft[NEL[SteamTag]])(_.asRight)
       tagExterior      <- findTag(_neTags, Exterior).map(toVSTWithoutColor)
                             .fold(Option.empty[STVWithoutColor].asRight[String])({
                               case Left(error) => error.asLeft[Option[STVWithoutColor]]
@@ -98,8 +100,8 @@ object ToSteamDescriptionsValidated {
      
   private def validate(errors: List[String], xs: List[SDV]): ErrorOr[NEL[SDV]] =
     (errors.toNel, xs.toNel) match {
-      case (Some(_), _)      => "attempt-to-trasform-steam-descriptions-to-validated-steam-descriptions-failed".asLeft[NEL[SDV]]
-      case (None, None)      => "attempt-to-transfrom-steam-descriptions-to-validated-steam-descriptions-returned-zero-results".asLeft[NEL[SDV]]
+      case (Some(_), _)      => "attempt to trasform steam descriptions to validated steam descriptions failed".asLeft[NEL[SDV]]
+      case (None, None)      => "attempt to transfrom steam descriptions to validated steam descriptions returned zero results".asLeft[NEL[SDV]]
       case (None, Some(nel)) => nel.asRight[String]
     }
 
@@ -114,13 +116,7 @@ object ToSteamDescriptionsValidated {
         case Right(result) => acc :+ result
         case Left(_)       => acc
       })
-    ).toNel  
-  
-  private def log(xs: NEL[ST]): IO[Unit] =
-    logger.info(s"""
-       |tags-summary
-       |  count: ${xs.size} 
-       |""".stripMargin)
+    ).toNel
     
   private def findTag(nel: NEL[ST], c: SteamTagCategory): Option[ST] =
     nel.find(_.category.map(_.toLowerCase === c.category).getOrElse(false))
@@ -160,7 +156,7 @@ object ToSteamDescriptionsValidated {
       internal_name           <- toTInternalName(x)               
       localized_category_name <- toTLocalizedCategoryName(x)    
       localized_tag_name      <- toTLocalizedTagName(x)
-      color                   <- x.localized_tag_name.fold("tag-color-not-defined".asLeft[String])(_.asRight[String])  
+      color                   <- x.localized_tag_name.fold("tag color not defined".asLeft[String])(_.asRight[String])  
     } yield SteamTagValidatedWithColor(
       category                = category,
       internal_name           = internal_name,
@@ -171,15 +167,15 @@ object ToSteamDescriptionsValidated {
   }
   
   private def toTCategory(x: ST): ErrorOr[String] =
-    x.category.fold("tag-category-not-defined".asLeft[String])(_.asRight[String])
+    x.category.fold("tag category not defined".asLeft[String])(_.asRight[String])
   
   private def toTInternalName(x: ST): ErrorOr[String] =
-    x.internal_name.fold("tag-internal_name-not-defined".asLeft[String])(_.asRight[String])  
+    x.internal_name.fold("tag internal_name not defined".asLeft[String])(_.asRight[String])  
     
   private def toTLocalizedCategoryName(x: ST): ErrorOr[String] =
-    x.localized_category_name.fold("tag-localized_category_name-not-defined".asLeft[String])(_.asRight[String])
+    x.localized_category_name.fold("tag localized_category_name not defined".asLeft[String])(_.asRight[String])
     
   private def toTLocalizedTagName(x: ST): ErrorOr[String] =
-    x.localized_tag_name.fold("tag-localized_tag_name-not-defined".asLeft[String])(_.asRight[String])      
+    x.localized_tag_name.fold("tag localized_tag_name not defined".asLeft[String])(_.asRight[String])      
     
 }

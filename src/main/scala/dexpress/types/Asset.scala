@@ -1,29 +1,27 @@
 package dexpress.types
 
 import java.util.UUID
-import cats.Monoid
-import cats.instances.string._
-import cats.instances.int._
-import cats.Eval
 
+import cats.Eval
 import org.http4s.Uri
 
 final case class Asset(
   id_asset:          UUID,
+  id_user:           UUID,
   id_refresh:        UUID,
-  trading:           Boolean,
-  steam_id:          String,
-  floatvalue:        Option[Double],
-  classid:           String,
-  instanceid:        String,
-  appid:             Int,
-  assetid:           String,
+  is_trading:        Boolean,
+  id_user_steam:     String,
+  float_value:       Option[Double],
+  id_class:          String,
+  id_instance:       String,
+  id_app:            Int,
+  id_asset_steam:    String,
   amount:            String,  
   market_hash_name:  String,
   icon_url:          String,
-  tradable:          Int,               // todo possibly remove. if 0, no write to datastore should occur
-  `type`:            String,            // `type` in steam response
-  link_id:           Option[String],
+//tradable:          Int,               // todo possibly remove. if 0, no write to datastore should occur
+  type_asset:        String,            // `type` in steam response
+  id_link:           Option[String],
   sticker_urls:      Option[List[Uri]], // todo make nonemptylist
   
   tag_exterior_category:                Option[String],
@@ -58,20 +56,21 @@ object Asset {
   
   val keys = Set(
     "id_asset",
+    "id_user",
     "id_refresh",
-    "trading",
-    "steam_id",
-    "floatvalue",
-    "classid",
-    "instanceid",
-    "appid",
-    "assetid",
+    "is_trading",
+    "id_user_steam",
+    "float_value",
+    "id_class",
+    "id_instance",
+    "id_app",
+    "id_asset_steam",
     "amount",
     "market_hash_name",
     "icon_url",
-    "tradable",
-    "type",
-    "link_id",
+//  "tradable",
+    "type_asset",
+    "id_link",
     "sticker_urls",
     "tag_exterior_category",
     "tag_exterior_internal_name",
@@ -97,25 +96,26 @@ object Asset {
     "tag_quality_color"
   )
 
-  def apply(iS: IdSteam, iR: IdRefresh, uuid: UUID = Eval.always(UUID.randomUUID).value)(t: (SDV, SAV)): Asset = {
+  def apply(iU: IdUser, iUS: IdUserSteam, iR: IdRefresh, uuid: UUID = Eval.always(UUID.randomUUID).value)(t: (SDV, SAV)): Asset = {
     val d = t._1
     val a = t._2
     Asset(
       id_asset         = uuid,
+      id_user          = iU.value,
       id_refresh       = iR.value,
-      trading          = false,
-      steam_id         = iS.value,
-      floatvalue       = None,
-      classid          = d.classid,
-      instanceid       = d.instanceid,
-      appid            = d.appid,
-      assetid          = a.assetid,
+      is_trading       = false,
+      id_user_steam    = iUS.value,
+      float_value      = None,
+      id_class         = d.classid,
+      id_instance      = d.instanceid,
+      id_app           = d.appid,
+      id_asset_steam   = a.id_asset_steam,
       amount           = a.amount,
       market_hash_name = d.market_hash_name,
       icon_url         = d.icon_url,
-      tradable         = d.tradable,
-      `type`           = d.`type`,
-      link_id          = d.link_id,
+//    tradable         = d.tradable,
+      type_asset       = d.`type`,
+      id_link          = d.link_id,
       sticker_urls     = d.sticker_urls,
       tag_exterior_category                = d.tagExterior map(_.category),
       tag_exterior_internal_name           = d.tagExterior map(_.internal_name),

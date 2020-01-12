@@ -3,6 +3,7 @@ package dexpress.clients.csfloat
 import cats.effect.{ConcurrentEffect, IO, Resource}
 import cats.implicits._
 import dexpress.functions.effect._
+import dexpress.types.IdAssetSteam
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.circe.optics.JsonPath._
 import org.http4s.circe._
@@ -16,11 +17,11 @@ class ClientCsFloat(config: ConfigCsFloat, clientHttp: Client[IO]) extends Http4
 
   implicit private val logger = Slf4jLogger.getLogger[IO]
   
-  def toFloatValue(assetId: String): IO[Double] =
+  def toFloatValue(iAS: IdAssetSteam): IO[Double] =
     for {
       json <- clientHttp
-                .expect[io.circe.Json](config.uri.+?("s", "").+?("d", "").+?("a", assetId))
-                .handleErrorWith(handleErrorT(s"csfloat call failed for assetid ($assetId)"))
+                .expect[io.circe.Json](config.uri.+?("s", "").+?("d", "").+?("a", iAS.value))
+                .handleErrorWith(handleErrorT(s"csfloat call failed for assetid (${iAS.value})"))
       fV   <- root.iteminfo.floatvalue.double.getOption(json)
                 .fold[IO[Double]](handleError("csfloat response missing floatvalue"))(_.pure[IO])
     } yield fV

@@ -2,10 +2,10 @@ package dexpress
 
 import cats.implicits._
 import ciris._
-import eu.timepit.refined.types.net.UserPortNumber
-import org.http4s.Uri
 import dexpress.codecs._
 import dexpress.types.ConfigService
+import eu.timepit.refined.types.net.UserPortNumber
+import org.http4s.Uri
 
 object _ConfigService {
   val DEFAULT_HTTP_HOST: Uri = Uri.unsafeFromString("0.0.0.0")

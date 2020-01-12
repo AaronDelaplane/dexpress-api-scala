@@ -2,8 +2,8 @@ package dexpress.functions.noneffect.toassets.functions
 
 import cats.effect.IO
 import cats.implicits._
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import dexpress.types._
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
 object ToSteamAssetsValidated {
 
@@ -11,43 +11,43 @@ object ToSteamAssetsValidated {
 
   def run(xs: NEL[SA]): IO[NEL[SAV]] = {
     val (errors, vSAs) = xs.toList.partitionMap(toSAValidated)
-    for {
-      _   <- log(errors, vSAs)
-      nel <- validate(errors, vSAs).fold(s => IO.raiseError(new Exception(s)), IO.pure)
-    } yield nel
+    log(errors, vSAs) *> validate(errors, vSAs).fold(
+      s => IO.raiseError(DataTransformationError("steam assets", "validated steam assets", s)),
+      IO.pure
+    )
   }
    
   private def toSAValidated(x: SA): ErrorOr[SAV] =
     for {
-      _log_id    <- s"classid=${x.classid}_instanceid=${x.instanceid}".asRight
+      _log_id        <- s"classid=${x.classid}_instanceid=${x.instanceid}".asRight
 
-      classid    <- x.classid.fold(s"asset.classid-not-defined--${_log_id}".asLeft[String])(_.asRight)
-      instanceid <- x.instanceid.fold(s"asset.instanceid-not-defined--${_log_id}".asLeft[String])(_.asRight)
-      appid      <- x.appid.fold(s"asset.appid-not-defined--${_log_id}".asLeft[Int])(_.asRight)
+      id_class       <- x.classid.fold(s"asset.classid not defined for (${_log_id})".asLeft[String])(_.asRight)
+      id_instance    <- x.instanceid.fold(s"asset.instanceid not defined for (${_log_id})".asLeft[String])(_.asRight)
+      id_app         <- x.appid.fold(s"asset.appid not defined for (${_log_id})".asLeft[Int])(_.asRight)
 
-      assetid    <- x.assetid.fold(s"asset.assetid-not-defined--${_log_id}".asLeft[String])(_.asRight)
-      amount     <- x.amount.fold(s"asset.instanceid-not-defined--${_log_id}".asLeft[String])(_.asRight)
+      id_asset_steam <- x.assetid.fold(s"asset.assetid not defined for (${_log_id})".asLeft[String])(_.asRight)
+      amount         <- x.amount.fold(s"asset.instanceid not defined for (${_log_id})".asLeft[String])(_.asRight)
     } yield
       SteamAssetValidated(
-        classid    = classid,
-        instanceid = instanceid,
-        appid      = appid,
-        assetid    = assetid,
-        amount     = amount
+        id_class       = id_class,
+        id_instance    = id_instance,
+        id_app         = id_app,
+        id_asset_steam = id_asset_steam,
+        amount         = amount
     ) 
   
   private def log(errors: List[String], xs: List[SAV]): IO[Unit] =
     logger.info(s"""
       |to-validated-steam-assets-nel-summary
       |  validated-steam-assets-count: ${xs.size}
-      |  erors-count:                  ${errors.size}
+      |  errors-count:                 ${errors.size}
       |  errors:                       $errors            
     """.stripMargin)
   
   private def validate(errors: List[String], xs: List[SAV]): ErrorOr[NEL[SAV]] =
     (errors.toNel, xs.toNel) match {
-      case (Some(_), _)      => "attempt-to-trasform-steam-assets-to-validated-steam-assets-failed".asLeft[NEL[SAV]]
-      case (None, None)      => "attempt-to-transfrom-steam-assets-to-validated-steam-assets-returned-zero-results".asLeft[NEL[SAV]]
+      case (Some(xs), _)     => s"the following errors occurred: ${xs.show}".asLeft[NEL[SAV]]
+      case (None, None)      => "no validated steam assets were generated".asLeft[NEL[SAV]]
       case (None, Some(nel)) => nel.asRight[String]
     }  
 

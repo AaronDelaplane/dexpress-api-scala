@@ -1,13 +1,13 @@
 package dexpress
 
 import cats.effect._
-import doobie.util.transactor.Transactor
-import org.flywaydb.core.Flyway
 import dexpress.clients.csfloat.{ClientCsFloat, ConfigCsFloat}
 import dexpress.clients.postgres.{ClientFlyway, ClientPostgres, ConfigPostgres}
 import dexpress.clients.steam.{ClientSteam, ConfigSteamClient}
 import dexpress.functions.effect._
 import dexpress.types._
+import doobie.util.transactor.Transactor
+import org.flywaydb.core.Flyway
 
 object _ResourcesService {
 

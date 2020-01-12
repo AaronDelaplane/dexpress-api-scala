@@ -5,6 +5,6 @@ import org.flywaydb.core.Flyway
 
 class ClientFlyway(flyway: Flyway) {
   
-  def migrate: IO[Unit] = IO.delay(flyway.migrate())
+  def migrate: IO[Int] = IO.delay(flyway.migrate())
   
 }

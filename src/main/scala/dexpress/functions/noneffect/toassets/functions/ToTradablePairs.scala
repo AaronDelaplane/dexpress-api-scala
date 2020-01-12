@@ -3,8 +3,8 @@ package dexpress.functions.noneffect.toassets.functions
 import cats.data.NonEmptyList
 import cats.effect.IO
 import cats.implicits._
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import dexpress.types._
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
 object ToTradablePairs {
 
@@ -44,7 +44,7 @@ object ToTradablePairs {
     nTDs.exists(isPair(a))
     
   private def isPair(a: SAV)(d: SDV): Boolean =
-    (d.classid === a.classid) && (d.instanceid === a.instanceid)  
+    (d.classid === a.id_class) && (d.instanceid === a.id_instance)  
       
   private def log(ds: NEL[SDV], as: NEL[SAV], xs: ((List[SDV], List[SAV]), (List[SDV], List[SAV]))): IO[Unit] = {
     val ((nTDs, nTAs), (tDs, tAs)) = xs
@@ -89,11 +89,11 @@ object ToTradablePairs {
       |  tradable-pairs-count:      ${pairs.size}
       |  distinct-classid-count:
       |    descriptions:            ${pairs.map(_._1).map(_.classid).toSet.size}
-      |    assets:                  ${pairs.map(_._2).map(_.classid).toSet.size}
+      |    assets:                  ${pairs.map(_._2).map(_.id_class).toSet.size}
       |  distinct-instanceid-count:
       |    descriptions:            ${pairs.map(_._1).map(_.instanceid).toSet.size}
-      |    assets:                  ${pairs.map(_._2).map(_.instanceid).toSet.size}
-      |  distinct-assetid-count:    ${pairs.map(_._2).map(_.assetid).toSet.size}
+      |    assets:                  ${pairs.map(_._2).map(_.id_instance).toSet.size}
+      |  distinct-assetid-count:    ${pairs.map(_._2).map(_.id_asset_steam).toSet.size}
     """.stripMargin)
   
   private def validate(errors: List[String], pairs: List[(SDV, SAV)]): ErrorOr[NEL[(SDV, SAV)]] =

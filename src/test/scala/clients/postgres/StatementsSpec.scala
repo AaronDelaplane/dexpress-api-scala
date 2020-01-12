@@ -1,58 +1,84 @@
-//package clients.postgres
-//
-//import java.util.UUID
-//
-//import cats.Monoid
-//import cats.effect.IO
-//import cats.instances.string.catsKernelStdMonoidForString
-//import doobie._
-//import org.scalatest._
-//import dexpress.clients.postgres.Statements._
-//import dexpress.types._
-//
-//class StatementsSpec extends FunSuite with Matchers with doobie.scalatest.IOChecker {
-//  
-//  implicit val cs = IO.contextShift(ExecutionContexts.synchronous)
-//  
-//  val uuid = UUID.randomUUID
-//  val iA   = IdAsset(uuid)
-//  val iR   = IdRefresh(uuid)
-//  val iS   = IdSteam(Monoid[String].empty)
-//
-//  val transactor = Transactor.fromDriverManager[IO](
-//    "org.postgresql.Driver", "jdbc:postgresql:inventory", "postgres", "password"
-//  )
-//  
-//  test("delete assets by id_refresh") {
-//    check(delete(iR))
-//  }
-//
-//  test("insert assets rows") {
-//    check(insertAssets)
-//  }
-//  
-//  test("insert events_assets_refresh row") {
-//    check(insertEventAssetsRefresh(iR, iS, 0L))
-//  }
-//  
-//  test("select assets row by id_asset") {
-//    check(selectAsset(iA))
-//  }
-//  
-//  test("select assets rows by id_refresh") {
-//    check(selectAssets(iR))
-//  }
-//  
-//  test("select events_assets_refresh rows by id_steam") {
-//    check(selectEventsAssetsRefresh(iS))
-//  }
-//
-//  test("update asset trading state without floatvalue") {
-//    check(updateAsset(iA, StateTrading(true)))
-//  }
-//  
-//  test("update asset trading state with floatvalue") {
-//    check(updateAsset(iA, StateTrading(true), FloatValue(0.0)))
-//  }
-//  
-//}
+package clients.postgres
+
+import cats.Monoid
+import cats.effect.IO
+import cats.instances.string.catsKernelStdMonoidForString
+import dexpress.clients.postgres.Statements._
+import dexpress.functions.noneffect.randomUUIDF
+import dexpress.types._
+import doobie._
+import org.scalatest._
+
+class StatementsSpec extends FunSuite with Matchers with doobie.scalatest.IOChecker {
+
+  implicit val cs = IO.contextShift(ExecutionContexts.synchronous)
+
+  val uuid = randomUUIDF.unsafeRunSync
+  val iA   = IdAsset(uuid)
+  val iR   = IdRefresh(uuid)
+  val iU   = IdUser(uuid)
+  val iUS  = IdUserSteam(Monoid[String].empty)
+  val user = User(uuid, "", "")
+  val sT   = StateTrading(true)
+
+  val transactor = Transactor.fromDriverManager[IO](
+    "org.postgresql.Driver", "jdbc:postgresql:dexpress", "postgres", "password"
+  )
+
+  test("delete(iR: IdRefresh)") {
+    check(delete(iR))
+  }
+  
+  test("exists(iUS: IdUserSteam)") {
+    check(exists(iUS))
+  }
+
+  test("insertAssets()") {
+    check(insertAssets)
+  }
+
+  test("insertEventAssetsRefresh(iR: IdRefresh, iU: IdUser, time: Long)") {
+    check(insertEventAssetsRefresh(iR, iU, 0L))
+  }
+  
+  test("insertUser(u: User)") {
+    check(insertUser(user))
+  }
+
+  test("selectAsset(iA: IdAsset)") {
+    check(selectAsset(iA))
+  }
+  
+  test("selectAssets(sT: StateTrading)") {
+    check(selectAssets(sT))
+  }
+  
+  test("selectAssetsFilter(sT: StateTrading, iR: IdRefresh)") {
+    check(selectAssetsFilter(sT, iR))
+  }
+  
+  test("selectAssetsFilterNot(sT: StateTrading, iU: IdUser)") {
+    check(selectAssetsFilterNot(sT, iU))
+  }
+
+  test("selectEventsAssetsRefresh(iU: IdUser)") {
+    check(selectEventsAssetsRefresh(iU))
+  }
+  
+  test("selectUser(iU: IdUser)") {
+    check(selectUser(iU))
+  }
+  
+  test("selectUser(iUS: IdUserSteam)") {
+    check(selectUser(iUS))
+  }
+
+  test("updateAsset(iA: IdAsset, sT: StateTrading)") {
+    check(updateAsset(iA, sT))
+  }
+
+  test("uupdateAsset(iA: IdAsset, sT: StateTrading, fV: FloatValue)") {
+    check(updateAsset(iA, sT, FloatValue(0.0)))
+  }
+
+}

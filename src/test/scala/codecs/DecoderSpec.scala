@@ -1,11 +1,11 @@
 package codecs
 
-import io.circe.syntax._
-import io.circe.{Decoder, Encoder}
-import org.scalatest._
 import dexpress.codecs._
 import dexpress.functions.effect._
 import dexpress.types._
+import io.circe.syntax._
+import io.circe.{Decoder, Encoder}
+import org.scalatest._
 
 /*
 Notes:

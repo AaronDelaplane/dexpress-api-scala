@@ -1,9 +1,9 @@
 package dexpress.clients.csfloat
 
 import ciris.{ConfigValue, env}
+import dexpress.codecs.uriDecoder
 import org.http4s.Uri
 import org.http4s.implicits._
-import dexpress.codecs.uriDecoder
 
 final case class ConfigCsFloat(
   uri: Uri

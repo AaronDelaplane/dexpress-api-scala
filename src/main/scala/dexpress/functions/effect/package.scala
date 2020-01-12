@@ -2,7 +2,6 @@ package dexpress.functions
 
 import cats.effect.IO
 import cats.implicits._
-import dexpress.types.ServiceError
 import io.chrisdavenport.log4cats.SelfAwareStructuredLogger
 import io.circe.parser.parse
 import io.circe.{Decoder, Json}
@@ -16,7 +15,7 @@ package object effect extends Http4sDsl[IO] {
     l.error(externalMessage) *> IO.raiseError(new Throwable(externalMessage))
   
   def handleErrorT[A](externalMessage: String)(t: Throwable)(implicit l: SelfAwareStructuredLogger[IO]): IO[A] =
-    l.error(t.getMessage) *> IO.raiseError(new Throwable(externalMessage))
+    l.error(t.getMessage) *> IO.raiseError(new RuntimeException(externalMessage))
 
   def getResourceUnsafe(path: String): String = {
     val source = Source.fromResource(path)

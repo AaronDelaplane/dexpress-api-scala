@@ -1,14 +1,14 @@
 package dexpress.types
 
 case class SteamAssetValidated(
-  classid:     String,
-  instanceid:  String,
-  appid:       Int,
-  //contextid:   String, // todo ask Darius if this is needed
-  assetid:     String,
-  amount:      String,
+  id_class:       String,
+  id_instance:    String,
+  id_app:         Int, 
+//contextid:      String, // todo ask Darius if this is needed
+  id_asset_steam: String,
+  amount:         String,
 )
 
 object SteamAssetValidated {
-  val empty = SteamAssetValidated("","",0,"","")
+  val empty = SteamAssetValidated("", "", 0, "", "")
 }

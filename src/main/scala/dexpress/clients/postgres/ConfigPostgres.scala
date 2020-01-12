@@ -2,9 +2,9 @@ package dexpress.clients.postgres
 
 import cats.implicits._
 import ciris._
+import dexpress.codecs._
 import eu.timepit.refined.types.net.UserPortNumber
 import org.http4s.Uri
-import dexpress.codecs._
 
 final case class ConfigPostgres(
     host: Uri,
@@ -19,7 +19,8 @@ final case class ConfigPostgres(
 
 object ConfigPostgres {
   // note: '0.0.0.0' will cause flyway's attempt to connect to fail
-  val DEFAULT_POSTGRES_HOST: Uri = Uri.unsafeFromString("localhost")
+  // note: change argument to "localhost" for running via SBT. do as ENV var to avoid changes here
+  val DEFAULT_POSTGRES_HOST: Uri = Uri.unsafeFromString("postgres")
   val DEFAULT_POSTGRES_PORT: UserPortNumber = UserPortNumber.unsafeFrom(5432)
   val DEFAULT_POSTGRES_USER: String = "postgres"
   val DEFAULT_POSTGRES_PASSWORD: Secret[String] = Secret("password")

@@ -1,13 +1,14 @@
 package dexpress.clients.steam
 
 import cats.effect.{ConcurrentEffect, IO, Resource}
+import dexpress.codecs._
+import dexpress.enums.ResourceName.Steam
+import dexpress.types.{SteamInventory, _}
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.dsl.Http4sDsl
 import org.http4s.{Request, Uri}
-import dexpress.codecs._
-import dexpress.types.{SteamInventory, _}
 
 import scala.concurrent.ExecutionContext.global
 
@@ -15,12 +16,20 @@ class ClientSteam(config: ConfigSteamClient, httpClient: Client[IO]) extends Htt
   
   private val logger = Slf4jLogger.getLogger[IO]
   
-  def getInventory(iS: IdSteam): IO[SteamInventory] =
+  def getInventory(iS: IdUserSteam): IO[SteamInventory] = {
+    val appId = 730
+    val contextId = 2
     for {
-      si <- httpClient.expect[SteamInventory](
+      si <- httpClient.expectOr[SteamInventory](
               Request[IO]()
                 .withMethod(GET)
-                .withUri(Uri.unsafeFromString(s"${config.steamUri}/inventory/${iS.value}/730/2?l=english&count=1000")))
+                .withUri(Uri.unsafeFromString(s"${config.steamUri}/inventory/${iS.value}/$appId/$contextId?l=english&count=1000"))
+            )(
+              onError => onError.status match {
+                case Forbidden => IO.raiseError(ResourceAuthenticationError(Steam, iS.value))
+                case _         => IO.raiseError(ResourceGenericError(Steam, "read inventory"))
+              }
+            )
       _  <- logger.info(s"""
               |steam-inventory-fetch-results:
               |  assets-count:       ${si.assets.map(_.size)}
@@ -31,6 +40,7 @@ class ClientSteam(config: ConfigSteamClient, httpClient: Client[IO]) extends Htt
               |""".stripMargin)
 
     } yield si
+  }
 
   /*
   import functions_io.decodeFile
