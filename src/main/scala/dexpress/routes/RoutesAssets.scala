@@ -43,7 +43,7 @@ class RoutesAssets(resources: ResourcesService) extends Http4sDsl[IO] {
                 .valueOr(parseFailures  => BadRequest(parseFailures.show))
         }
       
-    case PUT -> Root / "asset" :? IdAssetQPM(idAssetValidated) +& StateTradingQPM(stateTradingValidated) =>
+    case PATCH -> Root / "asset" :? IdAssetQPM(idAssetValidated) +& StateTradingQPM(stateTradingValidated) =>
       (idAssetValidated, stateTradingValidated)
         .mapN((iA, sT)         => updateAssetTradingState.run(iA, sT))
         .valueOr(parseFailures => BadRequest(parseFailures.show))

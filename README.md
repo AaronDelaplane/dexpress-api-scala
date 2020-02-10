@@ -109,7 +109,7 @@ Note that the term _resource_ used below is meant in the general sense.  For exa
 
 ### Fetch Assets
 ```
-GET http://localhost:10000/assets
+GET /assets
 ```
 #### Parameter / Query / Required:
 ```
@@ -119,7 +119,7 @@ limit:   integer range[0 - 1000]
 ```
 #### Parameter / Query / Optional:  
 
-- `filter` and `filternot` may not both be used in the same request 
+- `filter` and `filternot` may not be used together in the same request
 ```
 filter:    id_user uuid
 filternot: id_user uuid
@@ -131,12 +131,12 @@ Return the first 100 trading|non-trading assets:
 GET /assets?trading=<boolean>&offset=0&limit=100
 ```
 ```
-Return all trading|non-trading assets for single id_user:
+Return all trading|non-trading assets for id_user:
 
 GET /assets?trading=<boolean>?filter=<uuid>
 ```
 ```
-Return all trading|non-trading assets except those for single id_user: 
+Return all trading|non-trading assets except those for id_user: 
 
 GET /assets?trading=<true>&filternot=<uuid>
 ```  
@@ -146,7 +146,7 @@ Return x number of trading|non-trading assets:
 GET /assets?trading=<boolean>&limit=<integer>
 ```
 ```
-Return x number of trading|non-trading assets for single id_user:
+Return x number of trading|non-trading assets for id_user:
 
 GET /assets?trading=<boolean>&filter=<uuid>&limit=<integer>
 ```
@@ -158,7 +158,7 @@ GET /assets?trading=<boolean>&offset=10&limit=10
 GET /assets?trading=<boolean>&offset=20&limit=10
 ```
 ```
-Return all trading|non-trading assets for single id_user in successive series of 10 per call
+Return all trading|non-trading assets for id_user in successive series of 10 per call
 
 GET /assets?trading=<boolean>&offset=0&limit=10
 GET /assets?trading=<boolean>&offset=10&limit=10
@@ -230,23 +230,17 @@ else if (user's inventory exists in Dexpress' data store)
 
 ---
 
-### Check If ID Maps To Existing User
+### Check If `id_user_steam` Maps To Existing User
 ```
-GET http://localhost:10000/user/exists
+GET /user/exists
 ```
 #### Parameter / Query / Required:
 ```
-idusersteam: string non-empty
-- or -
-iduser: uuid
+idusersteam: string
 ```
 #### Examples:
 ```
-Check if id_user_steam maps to existing user:
-GET http://localhost:10000/user/exists?idusersteam=abc123
-
-Check if id_user maps to existing user:
-GET http://localhost:10000/user/exists?iduser=24405bdd-de7c-4a36-958d-58ce03889008
+GET /user/exists?idusersteam=<id_user_steam>
 ```
 #### Schema / Response / Status 200 (Ok):
 ```
@@ -257,21 +251,21 @@ GET http://localhost:10000/user/exists?iduser=24405bdd-de7c-4a36-958d-58ce038890
 
 ### Save New User
 ```
-POST http://localhost:10000/user
+POST /user
 ```
 #### Schema / Request:
 ```
 {
-  id_user_steam:   string non-empty   
-  user_name_first: string non-empty  
+  id_user_steam:   string   
+  user_name_first: string  
 }
 ```
 #### Schema / Response / Status 200 (Ok):
 ```
 {
-  id_user_steam:    string non-empty
-  user_name_first:  string non-empty
-  id_user: uuid
+  id_user_steam:   string
+  user_name_first: string
+  id_user:         uuid
 }
 ```
 
@@ -279,17 +273,37 @@ POST http://localhost:10000/user
 
 ### Fetch Existing User Data
 ```
-GET http://localhost:10000/user
+GET /user
+```
+#### Parameter / Query / Required:
+```
+idusersteam: string
+```
+#### Example:
+```
+GET /user?idusersteam=<id_user_steam>
+```
+#### Schema / Response / Status 200 (Ok):
+```
+{
+  id_user_steam:   string
+  user_name_first: string
+  id_user:         uuid
+}
 ```
 
 ---
 
 ### Update Asset
 ```
-GET http://localhost:10000/asset?assetid=<uuid>&trading=<boolean>
-example: http://localhost:10000/asset?assetid=610c176f-e4a3-4c9c-9dcc-d7c0caad4e64&trading=true
-returns: The updated asset (see object above for example)
+PATCH /asset
 ```
-#### Notes:
-- An attempt to set an asset's trading state to its current state will result in an error response.
-
+#### Parameter / Query / Required:
+```
+idasset: uuid
+trading: boolean
+```
+#### Example:
+```
+PATCH /asset?idasset=<uuid>&trading=<boolean>
+```
