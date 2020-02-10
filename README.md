@@ -238,16 +238,16 @@ POST /user
 #### Schema / Request:
 ```
 {
-  id_user_steam:   string   
-  user_name_first: string  
+  id_user_steam: string   
+  name_first:    string  
 }
 ```
 #### Schema / Response / Status 200 (Ok):
 ```
 {
-  id_user_steam:   string
-  user_name_first: string
-  id_user:         uuid
+  id_user_steam: string
+  name_first:    string
+  id_user:       uuid
 }
 ```
 
@@ -268,9 +268,9 @@ GET /user?idusersteam=<id_user_steam>
 #### Schema / Response / Status 200 (Ok):
 ```
 {
-  id_user_steam:   string
-  user_name_first: string
-  id_user:         uuid
+  id_user_steam: string
+  name_first:    string
+  id_user:       uuid
 }
 ```
 
