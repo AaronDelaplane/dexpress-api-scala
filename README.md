@@ -126,43 +126,25 @@ filternot: id_user uuid
 ```
 #### Examples:
 ```
-Return the first 100 trading|non-trading assets:
+Return all trading assets in successive series of 10 per call:
 
-GET /assets?trading=<boolean>&offset=0&limit=100
-```
-```
-Return all trading|non-trading assets for id_user:
-
-GET /assets?trading=<boolean>?filter=<uuid>
-```
-```
-Return all trading|non-trading assets except those for id_user: 
-
-GET /assets?trading=<true>&filternot=<uuid>
-```  
-```
-Return x number of trading|non-trading assets:
-
-GET /assets?trading=<boolean>&limit=<integer>
-```
-```
-Return x number of trading|non-trading assets for id_user:
-
-GET /assets?trading=<boolean>&filter=<uuid>&limit=<integer>
-```
-```
-Return all trading|non-trading assets in successive series of 10 per call:
-
-GET /assets?trading=<boolean>&offset=0&limit=10
-GET /assets?trading=<boolean>&offset=10&limit=10
-GET /assets?trading=<boolean>&offset=20&limit=10
+GET /assets?trading=true&offset=0&limit=10
+GET /assets?trading=true&offset=10&limit=10
+GET /assets?trading=true&offset=20&limit=10
 ```
 ```
 Return all trading|non-trading assets for id_user in successive series of 10 per call:
 
-GET /assets?trading=<boolean>&offset=0&limit=10
-GET /assets?trading=<boolean>&offset=10&limit=10
-GET /assets?trading=<boolean>&offset=20&limit=10
+GET /assets?trading=<boolean>&offset=0&limit=10&filter=<id_user>
+GET /assets?trading=<boolean>&offset=10&limit=10&filter=<id_user>
+GET /assets?trading=<boolean>&offset=20&limit=10&filter=<id_user>
+```
+```
+Return all trading assets except those for id_user in successive series of 10 per call:
+
+GET /assets?trading=<boolean>&offset=0&limit=10&filternot=<id_user>
+GET /assets?trading=<boolean>&offset=10&limit=10&filternot=<id_user>
+GET /assets?trading=<boolean>&offset=20&limit=10&filternot=<id_user>
 ```
 #### Schema / Response / Status 200 (Ok):
 ```
