@@ -151,14 +151,14 @@ Return x number of trading|non-trading assets for id_user:
 GET /assets?trading=<boolean>&filter=<uuid>&limit=<integer>
 ```
 ```
-Return all trading|non-trading assets in successive series of 10 per call
+Return all trading|non-trading assets in successive series of 10 per call:
 
 GET /assets?trading=<boolean>&offset=0&limit=10
 GET /assets?trading=<boolean>&offset=10&limit=10
 GET /assets?trading=<boolean>&offset=20&limit=10
 ```
 ```
-Return all trading|non-trading assets for id_user in successive series of 10 per call
+Return all trading|non-trading assets for id_user in successive series of 10 per call:
 
 GET /assets?trading=<boolean>&offset=0&limit=10
 GET /assets?trading=<boolean>&offset=10&limit=10
@@ -271,7 +271,7 @@ POST /user
 
 ---
 
-### Fetch Existing User Data
+### Fetch Existing User
 ```
 GET /user
 ```
