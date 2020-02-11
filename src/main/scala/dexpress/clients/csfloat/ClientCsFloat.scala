@@ -17,14 +17,14 @@ class ClientCsFloat(config: ConfigCsFloat, clientHttp: Client[IO]) extends Http4
 
   implicit private val logger = Slf4jLogger.getLogger[IO]
   
-  def toFloatValue(iAS: IdAssetSteam): IO[Double] =
-    for {
-      json <- clientHttp
-                .expect[io.circe.Json](config.uri.+?("s", "").+?("d", "").+?("a", iAS.value))
-                .handleErrorWith(handleErrorT(s"csfloat call failed for assetid (${iAS.value})"))
-      fV   <- root.iteminfo.floatvalue.double.getOption(json)
-                .fold[IO[Double]](handleError("csfloat response missing floatvalue"))(_.pure[IO])
-    } yield fV
+  def toFloatValue(iAS: IdAssetSteam): IO[Double] = scala.util.Random.nextDouble.pure[IO]
+//    for {
+//      json <- clientHttp
+//                .expect[io.circe.Json](config.uri.+?("s", "").+?("d", "").+?("a", iAS.value))
+//                .handleErrorWith(handleErrorT(s"csfloat call failed for assetid (${iAS.value})"))
+//      fV   <- root.iteminfo.floatvalue.double.getOption(json)
+//                .fold[IO[Double]](handleError("csfloat response missing floatvalue"))(_.pure[IO])
+//    } yield fV
   
 }
 

@@ -62,9 +62,9 @@ docker-compose up
 sbt> clean
 sbt> assembly
 sbt> exit
-> docker build -t aarondelaplane/dexpress-api-scala:latest .
+> docker build -t aarondelaplane/dexpress-api-scala:<version> .
 // new image is now available locally
-> docker push aarondelaplane/dexpress-api-scala:latest
+> docker push aarondelaplane/dexpress-api-scala:<version>
 // new image is now available remotely
 ```
 

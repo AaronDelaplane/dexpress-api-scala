@@ -25,18 +25,22 @@ class RoutesAssets(resources: ResourcesService) extends Http4sDsl[IO] {
       +& MaybeSearchFilterNotQPM(maybeSearchFilterNotValidated)
         =>
           (maybeSearchFilterValidated, maybeSearchFilterNotValidated) match {
+            
             case (None, None) =>
               (stateTradingValidated, searchOffsetValidated, searchLimitValidated)
                 .mapN((sT, sO, sL)      => toAssets.runToResponse(sT, sO, sL))
                 .valueOr(parseFailures  => BadRequest(parseFailures.show))
+            
             case (Some(searchFilterValidated), None) =>
               (stateTradingValidated, searchOffsetValidated, searchLimitValidated, searchFilterValidated)
                 .mapN((sT, sO, sL, sFV) => toAssets.runToResponseFilter(sT, sO, sL, IdUser(sFV.value)))
                 .valueOr(parseFailures  => BadRequest(parseFailures.show))
+            
             case (None, Some(searchFilterNotValidated)) =>
               (stateTradingValidated, searchOffsetValidated, searchLimitValidated, searchFilterNotValidated)
                 .mapN((sT, sO, sL, sFN) => toAssets.runToResponseFilterNot(sT, sO, sL, sFN))
                 .valueOr(parseFailures  => BadRequest(parseFailures.show))
+            
             case (Some(_), Some(_)) =>
               (stateTradingValidated, searchOffsetValidated, searchLimitValidated)
                 .mapN((_, _, _)         => BadRequest("filter and filternot query parameters must not both be used")) // sql search
