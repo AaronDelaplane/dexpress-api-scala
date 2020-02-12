@@ -197,17 +197,38 @@ GET /assets?trading=<boolean>&offset=20&limit=10&filternot=<id_user>
 - A user may have a maximum of 1000 tradable assets. This limitation is set by Steam.
 - Calls to fetch assets for a specific user result in the following workflow:
 ```
-if (user's inventory does not exist in Dexpress' data store)
-    => read user's inventory from Steam's data store
-    => write user's inventory to Dexpress' data store
-    => return user's inventory from Dexpress' data store 
-else if (user's inventory exists in Dexpress' data store)
+if (id_user does not map to row in table events_refresh_assets)
+
+    => read user's inventory from Steam's Web API
+
+    => validate, process, & write user's inventory to table assets
+
+    => write event metadata to table events_refresh_assets
+
+    => read & return user's inventory from table assets
+
+else if (id_user does map to row in table events_refresh_assets)
+
     if (refresh time period not expired)
-        => return user's inventory from Dexpress' data store
+
+        => read & return user's inventory from table assets
+
     else if (refresh time period expired)
-        => read user's inventory from Steam's data store
-        => write user's inventory to Dexpress' data store maintaining state of still-valid assets
-        => return user's inventory from Dexpress' data store        
+
+        => read user's inventory from Steam's Web API (inventory_A)
+
+        => validate & process user's inventory
+
+        => read user's inventory from table assets (inventory_B)
+        
+        => combine inventory_A & inventory_B to create new representation of user's inventory
+             - maintain trading status of still-valid assets
+        
+        => write combined inventory to table assets
+
+        => write event metadata to table events_refresh_assets
+        
+        => read & return user's inventory from table assets     
 ```
 
 ---
