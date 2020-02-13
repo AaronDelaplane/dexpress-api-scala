@@ -224,6 +224,8 @@ else if (id_user does map to row in table events_refresh_assets)
         => combine inventory_A & inventory_B to create new representation of user's inventory
              - maintain trading status of still-valid assets
         
+        => delete user's inventory from table assets
+
         => write combined inventory to table assets
 
         => write event metadata to table events_refresh_assets
