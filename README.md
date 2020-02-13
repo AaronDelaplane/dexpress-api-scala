@@ -48,7 +48,7 @@ docker-compose up
 
 ## How To Rebuild API And Datastore From Scratch
 ```
-> ctrl-c // to stop running containers
+> cd <project root>
 > docker-compose down
 > docker-compose up --force-recreate
 ```
