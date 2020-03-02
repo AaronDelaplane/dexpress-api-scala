@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   api:
-    image: aarondelaplane/dexpress-api-scala:0.1
+    image: aarondelaplane/dexpress-api-scala:0.2
     ports:
       - 10000:10000
     depends_on:
