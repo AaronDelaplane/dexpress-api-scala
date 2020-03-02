@@ -7,9 +7,8 @@ import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
-import org.http4s.server.middleware.Logger
+import org.http4s.server.middleware.{CORS, CORSConfig, Logger}
 import org.http4s.syntax.kleisli._
-
 
 object Main extends IOApp with Http4sDsl[IO] {
   
@@ -36,7 +35,17 @@ object Main extends IOApp with Http4sDsl[IO] {
                      }
                    )
        
-                   Logger.httpApp(logHeaders = false, logBody = false)(routes.orNotFound)
+                   Logger.httpApp(logHeaders = false, logBody = false)(
+                     CORS(
+                       routes,
+                       CORSConfig(
+                         anyOrigin = true,
+                         anyMethod = true,
+                         allowCredentials = true,
+                         maxAge = 86400L
+                       )
+                     ).orNotFound
+                   )
                  }
                  .serve
                  .compile
