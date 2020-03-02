@@ -46,7 +46,7 @@ docker-compose up
 ```
 ---
 
-## How To Rebuild API And Datastore From Scratch
+## How To Create API And Datastore From Scratch
 ```
 > cd <project root>
 > docker-compose down
@@ -55,17 +55,24 @@ docker-compose up
 
 ---
 
-## How To Build And Push A New Docker Image For API
+## How To Create And Publish A New Docker Image Of API
+1. Build JAR file 
 ```
 > cd <project root>
 > sbt
 sbt> clean
 sbt> assembly
 sbt> exit
+```
+
+2) Build Docker image (this action will make the image available locally)
+```
 > docker build -t aarondelaplane/dexpress-api-scala:<version> .
-// new image is now available locally
+```
+
+3) Push Docker image to Docker Hub (this action will make the image available remotely)
+```
 > docker push aarondelaplane/dexpress-api-scala:<version>
-// new image is now available remotely
 ```
 
 ---
