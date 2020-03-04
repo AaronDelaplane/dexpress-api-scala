@@ -24,7 +24,7 @@ touch docker-compose.yml
 version: '3.7'
 services:
   api:
-    image: aarondelaplane/dexpress-api-scala:latest
+    image: aarondelaplane/dexpress-api-scala:0.2
     ports:
       - 10000:10000
     depends_on:
