@@ -72,6 +72,7 @@ lazy val root = (project in file("."))
       "io.circe"          %% "circe-generic"       % circeVersion,
       "io.circe"          %% "circe-parser"        % circeVersion,
       "io.circe"          %% "circe-optics"        % "0.12.0",
+      "io.estatico"       %% "newtype"             % "0.4.3",
       "is.cir"            %% "ciris"               % "1.0.0",
       "org.flywaydb"       % "flyway-core"         % "6.1.0",
       "org.http4s"        %% "http4s-dsl"          % http4sVersion,
@@ -132,6 +133,7 @@ lazy val root = (project in file("."))
       "-Ybackend-parallelism", "8", // Enable paralellisation — change to desired number!
       "-Ycache-plugin-class-loader:last-modified", // Enables caching of classloaders for compiler plugins
       "-Ycache-macro-class-loader:last-modified", // and macro definitions. This can lead to performance improvements.
+      "-Ymacro-annotations"
     ),
     
     /*
